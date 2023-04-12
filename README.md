@@ -1,4 +1,4 @@
-## miniDevOps - a toolbox running in Docker (Alpine Linux)
+## miniDevOps - a DevOps toolbox running in Docker (Alpine Linux)
 
 It contains the following DevOps tools:
 
