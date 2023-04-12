@@ -32,7 +32,7 @@ Now try to create a new cluster by using Kind as shown in the screenshot below.
 
 ![mini_devops](./images/minidevops.png)
 
-There is also a shell script that takes care of cluster creation and NGINX-Ingress deployment.
+There is also a shell script that takes care of cluster creation and NGINX-Ingress deployment. Just enter the cluster name as its only parameter and the rest will be done automatically.
 
 ![create_cluster_script](./images/setup_cluster.png)
 
