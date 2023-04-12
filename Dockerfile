@@ -44,4 +44,3 @@ RUN chmod +x ./kind
 RUN mv ./kind /usr/local/bin/kind
 
 ENTRYPOINT [ "bash" ]
-#CMD [ "/bin/bash" ]
