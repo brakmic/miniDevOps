@@ -41,6 +41,6 @@ RUN apk add --no-cache \
 ENV KIND_VERSION 0.18.0
 RUN curl -Lo ./kind https://kind.sigs.k8s.io/dl/v${KIND_VERSION}/kind-linux-amd64
 RUN chmod +x ./kind
-RUN mv ./kind /usr/local/bin/kind
+RUN mv ./kind /usr/bin/kind
 
 ENTRYPOINT [ "bash" ]
