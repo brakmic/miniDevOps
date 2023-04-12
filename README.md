@@ -27,7 +27,7 @@ To run the image execute the following command (adapt the volume bindings accord
 
 ```bash
 $ docker run --rm -it -v {$PWD}:/root -v {$HOME/.kube}:/root/.kube --rm --network=host --workdir /work devops
-``` 
+```
 
 The Docker image is available at: https://hub.docker.com/repository/docker/brakmic/devops
 
