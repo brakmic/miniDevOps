@@ -26,7 +26,7 @@ The config.yml contains a recommended Kind cluster configuration. Feel free to a
 To run the image execute the following command. The /var/run/docker.sock volume binding makes it possible to communicate with host's Docker instance. 
 
 ```bash
-$ docker run --rm -it --rm -v /var/run/docker.sock:/var/run/docker.sock --network=host --workdir /root devops
+$ docker run --rm -it --rm -v /var/run/docker.sock:/var/run/docker.sock --network=host --workdir /root brakmic/devops:latest
 ```
 Now try to create a new cluster by using Kind as shown in the screenshot below.
 
