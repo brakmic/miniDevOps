@@ -38,7 +38,7 @@ There is also a shell script, `create_cluster.sh`, that takes care of cluster cr
 
 [![create_cluster_script](./images/setup_cluster.png)](https://github.com/brakmic/miniDevOps/blob/dc198a8a54af670753833408d7263432a31a40cf/images/setup_cluster.png)
 
-## Keeping clusters between docker session
+## Keeping clusters between docker sessions
 
 If you want to keep the cluster you created during a session, simply copy the current `.kube/config` to a local volume. Next time you fire up miniDevOps just overwrite the default `.kube/config` with yours. For example:
 
