@@ -1,16 +1,20 @@
 FROM alpine:3.17.3
 
-COPY .bashrc /root/.bashrc
-COPY .nanorc /root/.nanorc
-RUN mkdir /root/.kube
+ENV HOME /root
+
+COPY .bashrc $HOME/.bashrc
+COPY .nanorc $HOME/.nanorc
+RUN mkdir $HOME/.kube
 # this is the config file for k8s
-COPY config /root/.kube/config
-ENV KUBECONFIG /root/.kube/config
+COPY config $HOME/.kube/config
+RUN chmod o-r $HOME/.kube/config
+RUN chmod g-r $HOME/.kube/config
+ENV KUBECONFIG $HOME/.kube/config
 
 # this YAML can be used to apply patches needed to open ports for ingresses under Kind
 # if you create a cluster without referring to this file you'll later need to apply them manually
 # it is recommended to add the flag --config=/root/config.yml when creating new clusters
-COPY config.yml /root/config.yml
+COPY config.yml $HOME/config.yml
 # you will also need to deploy one of the available ingress controllers that will listen on 80/443 ports
 # check this document to learn how to deploy them: 
 # NGINX: https://kind.sigs.k8s.io/docs/user/ingress/#ingress-nginx
@@ -18,8 +22,8 @@ COPY config.yml /root/config.yml
 # Kong: https://kind.sigs.k8s.io/docs/user/ingress/#ingress-kong
 
 # helper script that installs k8s clusters and deploys nginx ingress controllers
-COPY create_cluster.sh /root/create_cluster.sh
-RUN chmod +x /root/create_cluster.sh
+COPY create_cluster.sh $HOME/create_cluster.sh
+RUN chmod +x $HOME/create_cluster.sh
 
 RUN apk update
 
@@ -54,14 +58,18 @@ RUN chmod +x ./kubectl
 RUN mv ./kubectl /usr/bin/kubectl
 
 # helm
-ENV HELM_VERSION 3.10.2-r3
-RUN apk add --no-cache \
-	helm=${HELM_VERSION}
+ENV HELM_VERSION 3.11.3
+RUN curl -LO https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz
+RUN tar -zxvf helm-v${HELM_VERSION}-linux-amd64.tar.gz
+RUN chmod +x linux-amd64/helm
+RUN mv linux-amd64/helm /usr/bin/helm
 
 # terraform
-ENV TF_VERSION 1.3.4-r3
-RUN apk add --no-cache \
-	terraform=${TF_VERSION}
+ENV TF_VERSION 1.4.5
+RUN curl -LO https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip
+RUN unzip -x terraform_1.4.5_linux_amd64.zip
+RUN chmod +x terraform
+RUN mv ./terraform /usr/bin/terraform
 
 # kind
 ENV KIND_VERSION 0.18.0
