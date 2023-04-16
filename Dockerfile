@@ -25,8 +25,6 @@ COPY config.yml $HOME/config.yml
 COPY create_cluster.sh $HOME/create_cluster.sh
 RUN chmod +x $HOME/create_cluster.sh
 
-RUN apk update
-
 # basic stuff
 RUN	apk add --no-cache \
 	bash \
@@ -45,19 +43,23 @@ RUN	apk add --no-cache \
 	wget \
 	curl \
 	apache2-ssl \
-	apache2-utils
+	apache2-utils \
+	ncurses
 
-# DevOps stuff
+# Docker
+# https://www.docker.com/
 ENV DOCKER_VERSION 20.10.24-r1
 RUN apk add --no-cache \
 	docker=${DOCKER_VERSION}
 
 # kubectl
+# https://kubernetes.io/docs/reference/kubectl/
 RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
 RUN chmod +x ./kubectl
 RUN mv ./kubectl /usr/bin/kubectl
 
 # helm
+# https://helm.sh/
 ENV HELM_VERSION 3.11.3
 RUN curl -LO https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz
 RUN tar -zxvf helm-v${HELM_VERSION}-linux-amd64.tar.gz
@@ -65,6 +67,7 @@ RUN chmod +x linux-amd64/helm
 RUN mv linux-amd64/helm /usr/bin/helm
 
 # terraform
+# https://www.terraform.io/
 ENV TF_VERSION 1.4.5
 RUN curl -LO https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip
 RUN unzip -x terraform_1.4.5_linux_amd64.zip
@@ -72,9 +75,32 @@ RUN chmod +x terraform
 RUN mv ./terraform /usr/bin/terraform
 
 # kind
+# https://kind.sigs.k8s.io/
 ENV KIND_VERSION 0.18.0
 RUN curl -Lo ./kind https://kind.sigs.k8s.io/dl/v${KIND_VERSION}/kind-linux-amd64
 RUN chmod +x ./kind
 RUN mv ./kind /usr/bin/kind
+
+# kubectl's plugin manager krew
+# https://krew.sigs.k8s.io/
+ENV KREW_VERSION 0.4.3
+RUN mkdir /tmp/krew \
+	&& cd /tmp/krew \
+	&& curl -fsSL https://github.com/kubernetes-sigs/krew/releases/download/v${KREW_VERSION}/krew-linux_amd64.tar.gz | tar -zxf- \
+	&& ./krew-linux_amd64 install krew \
+	&& cd \
+	&& rm -rf /tmp/krew \
+	&& echo export 'PATH=$HOME/.krew/bin:$PATH' >> .bashrc
+
+# kubectx and kubens for k8s
+# https://github.com/ahmetb/kubectx
+RUN cd /tmp \
+	&& git clone https://github.com/ahmetb/kubectx \
+	&& cd kubectx \
+	&& mv kubectx /usr/bin/kubectx \
+	&& mv kubens /usr/bin/kubens \
+	&& mv completion/*.bash $COMPLETIONS \
+	&& cd .. \
+	&& rm -rf kubectx
 
 ENTRYPOINT [ "bash" ]
