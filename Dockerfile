@@ -96,6 +96,20 @@ RUN chmod +x terraform
 RUN mv ./terraform /usr/bin/terraform
 RUN rm terraform_${TF_VERSION}_linux_amd64.zip
 
+# skaffold
+# https://skaffold.dev/
+RUN curl -Lo /usr/bin/skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
+RUN chmod +x /usr/bin/skaffold
+
+# kubeseal
+ENV KUBESEAL_VERSION 0.20.2
+RUN mkdir ./kubeseal_install && cd ./kubeseal_install
+RUN curl -LO https://github.com/bitnami-labs/sealed-secrets/releases/download/v${KUBESEAL_VERSION}/kubeseal-${KUBESEAL_VERSION}-linux-amd64.tar.gz
+RUN tar -zxvf kubeseal-${KUBESEAL_VERSION}-linux-amd64.tar.gz
+RUN chmod +x ./kubeseal
+RUN mv ./kubeseal /usr/bin/kubeseal && cd ..
+RUN rm -rf kubeseal_install
+
 # kind
 # https://kind.sigs.k8s.io/
 ENV KIND_VERSION 0.18.0

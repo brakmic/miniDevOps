@@ -11,6 +11,8 @@ It contains the following DevOps tools:
 * kubens
 * kubectx
 * stern
+* skaffold
+* kubeseal
  
 Additionally, it provides the following packages:
 
