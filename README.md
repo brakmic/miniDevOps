@@ -9,7 +9,7 @@ It contains the following DevOps tools:
 * docker-compose
 * krew (kubectl's plugin manager)
 * kubens
-* kubectl
+* kubectx
  
 Additionally, it provides the following packages:
 
