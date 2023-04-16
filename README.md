@@ -10,6 +10,7 @@ It contains the following DevOps tools:
 * krew (kubectl's plugin manager)
 * kubens
 * kubectx
+* stern
  
 Additionally, it provides the following packages:
 

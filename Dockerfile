@@ -74,6 +74,9 @@ RUN kubectl completion bash > $COMPLETIONS/kubectl.bash
 # kubecolor
 RUN go install github.com/hidetatz/kubecolor/cmd/kubecolor@latest
 
+# stern
+RUN go install github.com/stern/stern@latest
+
 # helm
 # https://helm.sh/
 ENV HELM_VERSION 3.11.3
