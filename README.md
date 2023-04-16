@@ -2,10 +2,14 @@
 
 It contains the following DevOps tools:
 
-* kubectl
+* kubectl (aliased by default to `kubecolor`)
 * helm
 * terraform
 * kind
+* docker-compose
+* krew (plugin manager)
+* kubens
+* kubectl
  
 Additionally, it provides the following packages:
 
@@ -14,11 +18,14 @@ Additionally, it provides the following packages:
 * vim
 * git
 * gcc
+* go
+* python3
 * make
 * zip
 * lynx
 * curl
 * wget
+* ncurses
 * apache2-ssl + apache2-utils
 
 ## Setup
