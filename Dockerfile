@@ -65,14 +65,16 @@ RUN curl -LO https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz
 RUN tar -zxvf helm-v${HELM_VERSION}-linux-amd64.tar.gz
 RUN chmod +x linux-amd64/helm
 RUN mv linux-amd64/helm /usr/bin/helm
+RUN rm helm-v${HELM_VERSION}-linux-amd64.tar.gz
 
 # terraform
 # https://www.terraform.io/
 ENV TF_VERSION 1.4.5
 RUN curl -LO https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip
-RUN unzip -x terraform_1.4.5_linux_amd64.zip
+RUN unzip -x terraform_${TF_VERSION}_linux_amd64.zip
 RUN chmod +x terraform
 RUN mv ./terraform /usr/bin/terraform
+RUN rm terraform_${TF_VERSION}_linux_amd64.zip
 
 # kind
 # https://kind.sigs.k8s.io/
