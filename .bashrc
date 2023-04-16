@@ -1,4 +1,4 @@
-export PATH=$HOME/go/bin:$PATH
+export PATH=$HOME/go/bin:$HOME/.krew/bin:$PATH
 
 source /etc/profile.d/bash_completion.sh
 source $HOME/.bash_completion
@@ -16,4 +16,3 @@ alias h="helm"
 export HISTTIMEFORMAT="%d/%m/%y %T "
 export PS1="\[\e[31m\][\[\e[m\]\[\e[38;5;172m\]\u\[\e[m\]@\[\e[38;5;153m\]\h\[\e[m\] \[\e[38;5;214m\]\W\[\e[m\]\[\e[31m\]]\[\e[m\]\\$ "
 export HISTCONTROL=ignorespace:ignoredups:erasedups
-
