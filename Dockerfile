@@ -57,6 +57,8 @@ ENV DOCKER_VERSION 20.10.24-r1
 RUN apk add --no-cache \
 	docker=${DOCKER_VERSION}
 
+# docker-compose
+# https://docs.docker.com/compose/
 ENV COMPOSE_VERSION 1.29.2-r2
 RUN apk add docker-compose=${COMPOSE_VERSION}
 
