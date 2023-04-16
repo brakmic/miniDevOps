@@ -1,6 +1,7 @@
 FROM alpine:3.17.3
 
 ENV HOME /root
+ENV COMPLETIONS /usr/share/bash-completion/completions
 
 COPY .bashrc $HOME/.bashrc
 COPY .nanorc $HOME/.nanorc
@@ -44,7 +45,9 @@ RUN	apk add --no-cache \
 	curl \
 	apache2-ssl \
 	apache2-utils \
-	ncurses
+	ncurses \
+	go \
+	python3
 
 # Docker
 # https://www.docker.com/
@@ -52,11 +55,19 @@ ENV DOCKER_VERSION 20.10.24-r1
 RUN apk add --no-cache \
 	docker=${DOCKER_VERSION}
 
+ENV COMPOSE_VERSION 1.29.2-r2
+RUN apk add docker-compose=${COMPOSE_VERSION}
+
 # kubectl
 # https://kubernetes.io/docs/reference/kubectl/
-RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl \
+	-s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
 RUN chmod +x ./kubectl
 RUN mv ./kubectl /usr/bin/kubectl
+RUN kubectl completion bash > $COMPLETIONS/kubectl.bash
+
+# kubecolor
+RUN go install github.com/hidetatz/kubecolor/cmd/kubecolor@latest
 
 # helm
 # https://helm.sh/
@@ -65,7 +76,7 @@ RUN curl -LO https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz
 RUN tar -zxvf helm-v${HELM_VERSION}-linux-amd64.tar.gz
 RUN chmod +x linux-amd64/helm
 RUN mv linux-amd64/helm /usr/bin/helm
-RUN rm helm-v${HELM_VERSION}-linux-amd64.tar.gz
+RUN rm -rf helm-v${HELM_VERSION}-linux-amd64.tar.gz linux-amd64
 
 # terraform
 # https://www.terraform.io/
@@ -88,7 +99,8 @@ RUN mv ./kind /usr/bin/kind
 ENV KREW_VERSION 0.4.3
 RUN mkdir /tmp/krew \
 	&& cd /tmp/krew \
-	&& curl -fsSL https://github.com/kubernetes-sigs/krew/releases/download/v${KREW_VERSION}/krew-linux_amd64.tar.gz | tar -zxf- \
+	&& curl -fsSL https://github.com/kubernetes-sigs/krew/releases/download/v${KREW_VERSION}/krew-linux_amd64.tar.gz \
+	| tar -zxf- \
 	&& ./krew-linux_amd64 install krew \
 	&& cd \
 	&& rm -rf /tmp/krew \
