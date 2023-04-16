@@ -1,0 +1,3 @@
+complete -o default -F __start_kubectl kubecolor
+complete -o default -F __start_kubectl k
+

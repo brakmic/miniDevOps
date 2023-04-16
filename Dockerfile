@@ -4,8 +4,10 @@ ENV HOME /root
 ENV COMPLETIONS /usr/share/bash-completion/completions
 
 COPY .bashrc $HOME/.bashrc
+COPY .bash_completion $HOME/.bash_completion
 COPY .nanorc $HOME/.nanorc
 RUN mkdir $HOME/.kube
+
 # this is the config file for k8s
 COPY config $HOME/.kube/config
 RUN chmod o-r $HOME/.kube/config
