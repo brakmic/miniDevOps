@@ -1,3 +1,4 @@
-complete -o default -F __start_kubectl kubecolor
-complete -o default -F __start_kubectl k
-
+# kubectl aliases
+source <(kubectl completion bash)
+complete -F __start_kubectl k
+complete -F __start_kubectl kubecolor
