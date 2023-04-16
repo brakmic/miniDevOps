@@ -49,7 +49,8 @@ RUN	apk add --no-cache \
 	apache2-utils \
 	ncurses \
 	go \
-	python3
+	python3 \
+	jq
 
 # Docker
 # https://www.docker.com/

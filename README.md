@@ -25,6 +25,7 @@ Additionally, it provides the following packages:
 * lynx
 * curl
 * wget
+* jq
 * ncurses
 * apache2-ssl + apache2-utils
 
