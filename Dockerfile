@@ -84,6 +84,7 @@ RUN curl -LO https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz
 RUN tar -zxvf helm-v${HELM_VERSION}-linux-amd64.tar.gz
 RUN chmod +x linux-amd64/helm
 RUN mv linux-amd64/helm /usr/bin/helm
+RUN helm completion bash > $COMPLETIONS/helm.bash
 RUN rm -rf helm-v${HELM_VERSION}-linux-amd64.tar.gz linux-amd64
 
 # terraform
