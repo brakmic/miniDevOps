@@ -2,12 +2,12 @@
 
 It contains the following DevOps tools:
 
-* kubectl (aliased by default to `kubecolor`)
+* kubectl (aliased to `kubecolor`)
 * helm
 * terraform
 * kind
 * docker-compose
-* krew (plugin manager)
+* krew (kubectl's plugin manager)
 * kubens
 * kubectl
  
