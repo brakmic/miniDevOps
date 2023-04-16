@@ -5,3 +5,5 @@ complete -F __start_kubectl kubecolor
 # helm aliases
 source <(helm completion bash)
 complete -o default -F __start_helm h
+# stern
+source <(stern --completion bash)
