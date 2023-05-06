@@ -59,7 +59,7 @@ docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock -v ${PWD}:/root
 
 Now you can create a new cluster and then copy the updated `.kube/config` to `/root/local` whose contents will be available after docker shutdown.
 
-The Docker image is available at: https://hub.docker.com/repository/docker/brakmic/devops
+The Docker image is available at: https://hub.docker.com/r/brakmic/devops
 
 # LICENSE
 [MIT](LICENSE.md)

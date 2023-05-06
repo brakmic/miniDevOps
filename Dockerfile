@@ -54,7 +54,7 @@ RUN	apk add --no-cache \
 
 # Docker
 # https://www.docker.com/
-ENV DOCKER_VERSION 20.10.24-r1
+ENV DOCKER_VERSION 20.10.24-r2
 RUN apk add --no-cache \
 	docker=${DOCKER_VERSION}
 
@@ -102,7 +102,7 @@ RUN curl -Lo /usr/bin/skaffold https://storage.googleapis.com/skaffold/releases/
 RUN chmod +x /usr/bin/skaffold
 
 # kubeseal
-ENV KUBESEAL_VERSION 0.20.2
+ENV KUBESEAL_VERSION 0.20.5
 RUN mkdir ./kubeseal_install && cd ./kubeseal_install
 RUN curl -LO https://github.com/bitnami-labs/sealed-secrets/releases/download/v${KUBESEAL_VERSION}/kubeseal-${KUBESEAL_VERSION}-linux-amd64.tar.gz
 RUN tar -zxvf kubeseal-${KUBESEAL_VERSION}-linux-amd64.tar.gz
