@@ -1,6 +1,6 @@
 export PATH=$HOME/go/bin:$HOME/.krew/bin:$PATH
 
-source /etc/profile.d/bash_completion.sh
+source /etc/bash/bash_completion.sh
 source $HOME/.bash_completion
 
 alias update='apk update && apk upgrade'
