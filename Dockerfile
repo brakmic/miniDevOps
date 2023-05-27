@@ -60,8 +60,8 @@ RUN apk add --no-cache \
 
 # docker-compose
 # https://docs.docker.com/compose/
-#ENV COMPOSE_VERSION 1.29.2-r2
-#RUN apk add docker-compose=${COMPOSE_VERSION}
+ENV COMPOSE_VERSION 2.17.3-r2
+RUN apk add docker-cli-compose=${COMPOSE_VERSION}
 
 # kubectl
 # https://kubernetes.io/docs/reference/kubectl/
