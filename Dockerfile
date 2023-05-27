@@ -1,4 +1,4 @@
-FROM alpine:3.17.3
+FROM alpine:3.18
 
 ENV HOME /root
 ENV COMPLETIONS /usr/share/bash-completion/completions
@@ -54,14 +54,14 @@ RUN	apk add --no-cache \
 
 # Docker
 # https://www.docker.com/
-ENV DOCKER_VERSION 20.10.24-r2
+ENV DOCKER_VERSION 23.0.6-r2
 RUN apk add --no-cache \
 	docker=${DOCKER_VERSION}
 
 # docker-compose
 # https://docs.docker.com/compose/
-ENV COMPOSE_VERSION 1.29.2-r2
-RUN apk add docker-compose=${COMPOSE_VERSION}
+#ENV COMPOSE_VERSION 1.29.2-r2
+#RUN apk add docker-compose=${COMPOSE_VERSION}
 
 # kubectl
 # https://kubernetes.io/docs/reference/kubectl/
@@ -89,7 +89,7 @@ RUN rm -rf helm-v${HELM_VERSION}-linux-amd64.tar.gz linux-amd64
 
 # terraform
 # https://www.terraform.io/
-ENV TF_VERSION 1.4.5
+ENV TF_VERSION 1.4.6
 RUN curl -LO https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip
 RUN unzip -x terraform_${TF_VERSION}_linux_amd64.zip
 RUN chmod +x terraform
@@ -102,7 +102,7 @@ RUN curl -Lo /usr/bin/skaffold https://storage.googleapis.com/skaffold/releases/
 RUN chmod +x /usr/bin/skaffold
 
 # kubeseal
-ENV KUBESEAL_VERSION 0.20.5
+ENV KUBESEAL_VERSION 0.21.0
 RUN mkdir ./kubeseal_install && cd ./kubeseal_install
 RUN curl -LO https://github.com/bitnami-labs/sealed-secrets/releases/download/v${KUBESEAL_VERSION}/kubeseal-${KUBESEAL_VERSION}-linux-amd64.tar.gz
 RUN tar -zxvf kubeseal-${KUBESEAL_VERSION}-linux-amd64.tar.gz
