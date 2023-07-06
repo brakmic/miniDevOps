@@ -54,13 +54,13 @@ RUN	apk add --no-cache \
 
 # Docker
 # https://www.docker.com/
-ENV DOCKER_VERSION 23.0.6-r2
+ENV DOCKER_VERSION 23.0.6-r3
 RUN apk add --no-cache \
 	docker=${DOCKER_VERSION}
 
 # docker-compose
 # https://docs.docker.com/compose/
-ENV COMPOSE_VERSION 2.17.3-r2
+ENV COMPOSE_VERSION 2.17.3-r3
 RUN apk add docker-cli-compose=${COMPOSE_VERSION}
 
 # kubectl
@@ -139,5 +139,12 @@ RUN cd /tmp \
 	&& mv completion/*.bash $COMPLETIONS \
 	&& cd .. \
 	&& rm -rf kubectx
+
+# azure kubelogin
+# https://azure.github.io/kubelogin/
+RUN curl -Lo kubelogin.zip https://github.com/Azure/kubelogin/releases/download/v0.0.30/kubelogin-linux-amd64.zip \
+    && unzip kubelogin.zip \
+    && mv bin/linux_amd64/kubelogin /usr/bin \
+    && rm -rf bin
 
 ENTRYPOINT [ "bash" ]
