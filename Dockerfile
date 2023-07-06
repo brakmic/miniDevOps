@@ -143,8 +143,8 @@ RUN cd /tmp \
 # azure kubelogin
 # https://azure.github.io/kubelogin/
 RUN curl -Lo kubelogin.zip https://github.com/Azure/kubelogin/releases/download/v0.0.30/kubelogin-linux-amd64.zip \
-    && unzip kubelogin.zip \
-    && mv bin/linux_amd64/kubelogin /usr/bin \
-    && rm -rf bin
+    && unzip -d kubelogin kubelogin.zip \
+    && mv kubelogin/bin/linux_amd64/kubelogin /usr/bin \
+    && rm -rf kubelogin
 
 ENTRYPOINT [ "bash" ]
