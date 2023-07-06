@@ -13,6 +13,7 @@ It contains the following DevOps tools:
 * stern
 * skaffold
 * kubeseal
+* kubelogin
  
 Additionally, it provides the following packages:
 
