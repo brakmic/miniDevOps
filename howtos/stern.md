@@ -22,11 +22,17 @@ It will display all available flags:
 
 ```bash
 --all-namespaces        --container             --exclude               --field-selector=       --max-log-requests      --only-log-lines        --since=                --timestamps
+
 --color                 --container-state       --exclude-container     --help                  --max-log-requests=     --output                --tail                  --timezone
+
 --color=                --container-state=      --exclude-container=    --include               --namespace             --output=               --tail=                 --timezone=
+
 --completion            --container=            --exclude-pod           --include=              --namespace=            --prompt                --template              --verbosity
+
 --completion=           --context               --exclude-pod=          --init-containers       --no-follow             --selector              --template-file         --verbosity=
+
 --config                --context=              --exclude=              --kubeconfig            --node                  --selector=             --template-file=        --version
+
 --config=               --ephemeral-containers  --field-selector        --kubeconfig=           --node=                 --since                 --template=
 ```
 
@@ -39,7 +45,9 @@ stern <TAB>
 You'll get a list of resources like this:
 
 ```bash
-daemonset/              deployment/             job/                    pod/                    replicaset/             replicationcontroller/  service/                statefulset/
+daemonset/              deployment/             job/                    pod/                    replicaset/
+
+replicationcontroller/  service/                statefulset/
 ```
 
 ## 3. Tail Logs

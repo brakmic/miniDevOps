@@ -10,9 +10,9 @@ It contains the following DevOps tools:
 * krew (kubectl's plugin manager)
 * kubens
 * kubectx
-* stern
+* [stern](howtos/stern.md)
 * skaffold
-* kubeseal
+* [kubeseal](howtos/kubeseal.md)
 * kubelogin
  
 Additionally, it provides the following packages:
