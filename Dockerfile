@@ -100,6 +100,7 @@ RUN rm terraform_${TF_VERSION}_linux_amd64.zip
 # https://skaffold.dev/
 RUN curl -Lo /usr/bin/skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
 RUN chmod +x /usr/bin/skaffold
+RUN skaffold completion bash > ${COMPLETIONS}/skaffold.bash
 
 # kubeseal
 ENV KUBESEAL_VERSION 0.21.0
@@ -116,6 +117,7 @@ ENV KIND_VERSION 0.18.0
 RUN curl -Lo ./kind https://kind.sigs.k8s.io/dl/v${KIND_VERSION}/kind-linux-amd64
 RUN chmod +x ./kind
 RUN mv ./kind /usr/bin/kind
+RUN kind completion bash > ${COMPLETIONS}/kind.bash
 
 # kubectl's plugin manager krew
 # https://krew.sigs.k8s.io/
@@ -143,8 +145,8 @@ RUN cd /tmp \
 # azure kubelogin
 # https://azure.github.io/kubelogin/
 RUN curl -Lo kubelogin.zip https://github.com/Azure/kubelogin/releases/download/v0.0.30/kubelogin-linux-amd64.zip \
-    && unzip -d kubelogin kubelogin.zip \
-    && mv kubelogin/bin/linux_amd64/kubelogin /usr/bin \
-    && rm -rf kubelogin
+	&& unzip -d kubelogin kubelogin.zip \
+	&& mv kubelogin/bin/linux_amd64/kubelogin /usr/bin \
+	&& rm -rf kubelogin
 
 ENTRYPOINT [ "bash" ]
