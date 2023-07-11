@@ -11,7 +11,7 @@ It contains the following DevOps tools:
 * kubens
 * kubectx
 * [stern](howtos/stern.md)
-* skaffold
+* [skaffold](howtos/skaffold.md)
 * [kubeseal](howtos/kubeseal.md)
 * kubelogin
  
