@@ -149,4 +149,9 @@ RUN curl -Lo kubelogin.zip https://github.com/Azure/kubelogin/releases/download/
 	&& mv kubelogin/bin/linux_amd64/kubelogin /usr/bin \
 	&& rm -rf kubelogin
 
+# lazydocker
+# https://github.com/jesseduffield/lazydocker
+ENV DIR /usr/bin
+RUN curl https://raw.githubusercontent.com/jesseduffield/lazydocker/master/scripts/install_update_linux.sh | bash
+
 ENTRYPOINT [ "bash" ]
