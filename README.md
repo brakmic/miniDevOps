@@ -34,6 +34,8 @@ Additionally, it provides the following packages:
 * ncurses
 * apache2-ssl + apache2-utils
 
+![lazydocker](./gifs/lazydocker.gif)
+
 ## Setup
 
 The `config.yml` contains a recommended Kind cluster configuration. Feel free to adapt to your needs. 
