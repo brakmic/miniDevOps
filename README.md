@@ -61,7 +61,7 @@ You can execute it as follows: `./create_cluster.sh hbr-cluster`
 
 [![create_cluster_script](./images/setup_cluster.png)](https://github.com/brakmic/miniDevOps/blob/dc198a8a54af670753833408d7263432a31a40cf/images/setup_cluster.png)
 
-## Keeping clusters between docker sessions
+## Maintaining persistent Kubernetes Clusters across Docker sessions
 
 If you'd like to retain the cluster that you've created during a session, you can do so by simply duplicating the current .kube/config to a local volume. The next time you launch miniDevOps, all you need to do is replace the default .kube/config with the one you've saved. Here's an illustrative example:
 
