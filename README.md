@@ -1,13 +1,13 @@
-## miniDevOps - a DevOps toolbox running in Docker (Alpine Linux)
+## miniDevOps - A DevOps Toolkit Operated within Docker (Alpine Linux)
 
-It contains the following DevOps tools:
+The toolkit encompasses the following DevOps tools:
 
-* kubectl (aliased to `kubecolor`)
+* kubectl (alias: `kubecolor`)
 * helm
 * terraform
 * kind
 * docker-compose
-* krew (kubectl's plugin manager)
+* krew (serving as kubectl's plugin manager)
 * kubens
 * kubectx
 * [stern](howtos/stern.md)
@@ -15,11 +15,11 @@ It contains the following DevOps tools:
 * [kubeseal](howtos/kubeseal.md)
 * kubelogin
 * [lazydocker](https://github.com/jesseduffield/lazydocker)
- 
-Additionally, it provides the following packages:
 
-* bash + completion
-* nano + syntax hightlighting
+In addition, it comprises the subsequent packages:
+
+* bash (with completion functionality)
+* nano (featuring syntax highlighting)
 * vim
 * git
 * gcc
@@ -32,40 +32,45 @@ Additionally, it provides the following packages:
 * wget
 * jq
 * ncurses
-* apache2-ssl + apache2-utils
+* apache2-ssl, accompanied by apache2-utils
 
 ![lazydocker](./gifs/lazydocker.gif)
 
 ## Setup
 
-The [config.yml](./config.yml) contains a recommended Kind cluster configuration. Feel free to adapt to your needs. 
+The [config.yml](./config.yml) file houses a suggested Kind cluster configuration. Don't hesitate to adjust it to fit your specific needs.
 
-To run the image, execute the following command:
+To execute the image, use the following command:
 
 ```bash
-$ docker run --rm -it --rm -v /var/run/docker.sock:/var/run/docker.sock --network=host --workdir /root brakmic/devops:latest
+$ docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock --network=host --workdir /root brakmic/devops:latest
 ```
-The `/var/run/docker.sock` volume binding makes it possible to communicate with host's Docker instance.
 
-From the container's shell create a new cluster with: `kind cluster create --name hbr-cluster`.
+The `/var/run/docker.sock` volume binding provides a pathway for communication with the host's Docker instance.
+
+From within the container's shell, you can establish a new cluster with this command: `kind cluster create --name hbr-cluster`.
+
 
 [![mini_devops](./images/minidevops.png)](https://github.com/brakmic/miniDevOps/blob/dc198a8a54af670753833408d7263432a31a40cf/images/minidevops.png)
 
-There is also a shell script, `create_cluster.sh`, that both creates the cluster and deploys NGINX IngressController.
+You're now able to establish a new cluster and subsequently clone the updated `.kube/config` into `/root/local`. The content of this location will remain available, even after a Docker shutdown.
 
-Run it this way: `./create_cluster.sh hbr-cluster`
+Additionally, a shell script titled `create_cluster.sh` is available. This script not only sets up the cluster but also deploys the NGINX IngressController.
+
+You can execute it as follows: `./create_cluster.sh hbr-cluster`
 
 [![create_cluster_script](./images/setup_cluster.png)](https://github.com/brakmic/miniDevOps/blob/dc198a8a54af670753833408d7263432a31a40cf/images/setup_cluster.png)
 
 ## Keeping clusters between docker sessions
 
-If you want to keep the cluster you created during a session, simply copy the current `.kube/config` to a local volume. Next time you fire up miniDevOps just overwrite the default `.kube/config` with yours. For example:
+If you'd like to retain the cluster that you've created during a session, you can do so by simply duplicating the current .kube/config to a local volume. The next time you launch miniDevOps, all you need to do is replace the default .kube/config with the one you've saved. Here's an illustrative example:
+
 
 ```bash
 docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock -v ${PWD}:/root/local --rm --network=host --workdir /root brakmic/devops:latest
 ```
 
-Now you can create a new cluster and then copy the updated `.kube/config` to `/root/local` whose contents will be available after docker shutdown.
+You now have the ability to create a new cluster and subsequently duplicate the refreshed `.kube/config` to `/root/local`. This location will retain its content, even after the Docker system is shut down.
 
 The Docker image is available at: https://hub.docker.com/r/brakmic/devops
 
