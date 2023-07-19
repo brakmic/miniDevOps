@@ -14,7 +14,7 @@ It contains the following DevOps tools:
 * [skaffold](howtos/skaffold.md)
 * [kubeseal](howtos/kubeseal.md)
 * kubelogin
-* lazydocker
+* [lazydocker](https://github.com/jesseduffield/lazydocker)
  
 Additionally, it provides the following packages:
 
