@@ -54,13 +54,13 @@ RUN	apk add --no-cache \
 
 # Docker
 # https://www.docker.com/
-ENV DOCKER_VERSION 23.0.6-r3
+ENV DOCKER_VERSION 23.0.6-r4
 RUN apk add --no-cache \
 	docker=${DOCKER_VERSION}
 
 # docker-compose
 # https://docs.docker.com/compose/
-ENV COMPOSE_VERSION 2.17.3-r3
+ENV COMPOSE_VERSION 2.17.3-r5
 RUN apk add docker-cli-compose=${COMPOSE_VERSION}
 
 # kubectl
@@ -89,7 +89,7 @@ RUN rm -rf helm-v${HELM_VERSION}-linux-amd64.tar.gz linux-amd64
 
 # terraform
 # https://www.terraform.io/
-ENV TF_VERSION 1.4.6
+ENV TF_VERSION 1.5.5
 RUN curl -LO https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip
 RUN unzip -x terraform_${TF_VERSION}_linux_amd64.zip
 RUN chmod +x terraform
@@ -103,7 +103,7 @@ RUN chmod +x /usr/bin/skaffold
 RUN skaffold completion bash > ${COMPLETIONS}/skaffold.bash
 
 # kubeseal
-ENV KUBESEAL_VERSION 0.21.0
+ENV KUBESEAL_VERSION 0.23.0
 RUN mkdir ./kubeseal_install && cd ./kubeseal_install
 RUN curl -LO https://github.com/bitnami-labs/sealed-secrets/releases/download/v${KUBESEAL_VERSION}/kubeseal-${KUBESEAL_VERSION}-linux-amd64.tar.gz
 RUN tar -zxvf kubeseal-${KUBESEAL_VERSION}-linux-amd64.tar.gz
@@ -113,7 +113,7 @@ RUN rm -rf kubeseal_install
 
 # kind
 # https://kind.sigs.k8s.io/
-ENV KIND_VERSION 0.18.0
+ENV KIND_VERSION 0.20.0
 RUN curl -Lo ./kind https://kind.sigs.k8s.io/dl/v${KIND_VERSION}/kind-linux-amd64
 RUN chmod +x ./kind
 RUN mv ./kind /usr/bin/kind
@@ -121,7 +121,7 @@ RUN kind completion bash > ${COMPLETIONS}/kind.bash
 
 # kubectl's plugin manager krew
 # https://krew.sigs.k8s.io/
-ENV KREW_VERSION 0.4.3
+ENV KREW_VERSION 0.4.4
 RUN mkdir /tmp/krew \
 	&& cd /tmp/krew \
 	&& curl -fsSL https://github.com/kubernetes-sigs/krew/releases/download/v${KREW_VERSION}/krew-linux_amd64.tar.gz \
@@ -144,7 +144,7 @@ RUN cd /tmp \
 
 # azure kubelogin
 # https://azure.github.io/kubelogin/
-RUN curl -Lo kubelogin.zip https://github.com/Azure/kubelogin/releases/download/v0.0.30/kubelogin-linux-amd64.zip \
+RUN curl -Lo kubelogin.zip https://github.com/Azure/kubelogin/releases/download/v0.0.31/kubelogin-linux-amd64.zip \
 	&& unzip -d kubelogin kubelogin.zip \
 	&& mv kubelogin/bin/linux_amd64/kubelogin /usr/bin \
 	&& rm -rf kubelogin
