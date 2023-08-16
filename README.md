@@ -1,22 +1,24 @@
-## miniDevOps - A DevOps Toolkit Operated within Docker (Alpine Linux)
+# miniDevOps: A DevOps Toolkit Operated within Docker (Alpine Linux)
 
-The toolkit encompasses the following DevOps tools:
+`miniDevOps` is a Docker image designed to provide a comprehensive set of DevOps tools and utilities, all within an Alpine Linux environment.
 
-* kubectl (alias: `kubecolor`)
-* helm
-* terraform
-* kind
-* docker-compose
-* krew (serving as kubectl's plugin manager)
-* kubens
-* kubectx
+## Included DevOps Tools
+
+* [kubectl](https://github.com/kubernetes/kubectl) (aliased with [`kubecolor`](https://github.com/kubecolor/kubecolor))
+* [helm](https://github.com/helm/helm)
+* [terraform](https://github.com/hashicorp/terraform)
+* [kind](https://github.com/kubernetes-sigs/kind)
+* [docker compose v2](https://github.com/docker/compose)
+* [krew](https://github.com/kubernetes-sigs/krew) (kubectl's plugin manager)
+* [kubens](https://github.com/ahmetb/kubectx#kubens)
+* [kubectx](https://github.com/ahmetb/kubectx)
 * [stern](howtos/stern.md)
 * [skaffold](howtos/skaffold.md)
 * [kubeseal](howtos/kubeseal.md)
-* kubelogin
+* [kubelogin](https://github.com/Azure/kubelogin)
 * [lazydocker](https://github.com/jesseduffield/lazydocker)
 
-In addition, it comprises the subsequent packages:
+## Additional Packages
 
 * bash (with completion functionality)
 * nano (featuring syntax highlighting)
@@ -33,47 +35,185 @@ In addition, it comprises the subsequent packages:
 * jq
 * ncurses
 * apache2-ssl, accompanied by apache2-utils
-
-![lazydocker](./gifs/lazydocker.gif)
-
 ## Setup
 
-The [config.yml](./config.yml) file houses a suggested Kind cluster configuration. Don't hesitate to adjust it to fit your specific needs.
+The [config.yml](./config.yml) file contains a suggested Kind cluster configuration. Feel free to modify it according to your specific needs.
 
-To execute the image, use the following command:
+To run the `miniDevOps` Docker image, execute the following command:
 
 ```bash
 $ docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock --network=host --workdir /root brakmic/devops:latest
 ```
 
-The `/var/run/docker.sock` volume binding provides a pathway for communication with the host's Docker instance.
+The `/var/run/docker.sock` volume binding allows for communication with the host's Docker instance.
 
-From within the container's shell, you can establish a new cluster with this command: `kind cluster create --name hbr-cluster`.
-
-
-[![mini_devops](./images/minidevops.png)](https://github.com/brakmic/miniDevOps/blob/dc198a8a54af670753833408d7263432a31a40cf/images/minidevops.png)
-
-You're now able to establish a new cluster and subsequently clone the updated `.kube/config` into `/root/local`. The content of this location will remain available, even after a Docker shutdown.
-
-Additionally, a shell script titled `create_cluster.sh` is available. This script not only sets up the cluster but also deploys the NGINX IngressController.
-
-You can execute it as follows: `./create_cluster.sh hbr-cluster`
-
-[![create_cluster_script](./images/setup_cluster.png)](https://github.com/brakmic/miniDevOps/blob/dc198a8a54af670753833408d7263432a31a40cf/images/setup_cluster.png)
-
-## Maintaining persistent Kubernetes Clusters across Docker sessions
-
-If you'd like to retain the cluster that you've created during a session, you can do so by simply duplicating the current .kube/config to a local volume. The next time you launch miniDevOps, all you need to do is replace the default .kube/config with the one you've saved. Here's an illustrative example:
-
+Once inside the container's shell, establish a new cluster using the command:
 
 ```bash
-docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock -v ${PWD}:/root/local --rm --network=host --workdir /root brakmic/devops:latest
+$ kind create cluster --name my-cluster
 ```
 
-You now have the ability to create a new cluster and subsequently duplicate the refreshed `.kube/config` to `/root/local`. This location will retain its content, even after the Docker system is shut down.
+![mini_devops](./images/minidevops.png)
 
-The Docker image is available at: https://hub.docker.com/r/brakmic/devops
+With this setup, you can now establish a new cluster and then copy the updated `.kube/config` into `/root/local`. This directory will persist its content, even after a Docker shutdown.
 
-# LICENSE
+Additionally, a shell script titled `create_cluster.sh` is available. This script sets up the cluster and deploys the NGINX IngressController. Execute it with:
+
+```bash
+$ ./create_cluster.sh my-cluster
+```
+
+![create_cluster_script](./images/setup_cluster.png)
+
+## Maintaining Persistent Kubernetes Clusters Across Docker Sessions
+
+To retain your cluster between sessions, copy the current `.kube/config` to a local volume. Upon your next `miniDevOps` launch, replace the default `.kube/config` with the one you saved. Here's an example:
+
+```bash
+$ docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock -v ${PWD}:/root/local --network=host --workdir /root brakmic/devops:latest
+```
+
+This setup allows you to create a new cluster and then copy the updated `.kube/config` to `/root/local`. The contents of this directory will be preserved, even after the Docker system is shut down.
+
+## Docker Image
+
+The Docker image for `miniDevOps` is available at: [Docker Hub](https://hub.docker.com/r/brakmic/devops)
+
+## Useful Commands and Examples
+
+### kubectl
+
+Check the status of all the nodes within namespace `dev` in your Kubernetes cluster:
+
+```bash
+$ kubectl get nodes -n dev
+```
+
+Learn more with the [Kubernetes Official Documentation](https://kubernetes.io/docs/tutorials/)
+
+### helm
+
+Install a package on your Kubernetes cluster. In this example, we are installing the stable release of Prometheus:
+
+```bash
+$ helm install prometheus stable/prometheus
+```
+
+Get started with the [Helm Official Documentation](https://helm.sh/docs/intro/using_helm/)
+
+### terraform
+
+Initialize a new Terraform working directory and apply the configurations:
+
+```bash
+$ terraform init
+$ terraform apply
+```
+
+Explore more with the [Terraform Learn](https://learn.hashicorp.com/terraform)
+
+### docker compose v2
+
+Start all services defined in a `docker-compose.yml` file in detached mode:
+
+```bash
+$ docker compose up -d
+```
+
+Read more in the [Docker Compose Documentation](https://docs.docker.com/compose/migrate/)
+
+### kind
+
+Create a Kubernetes cluster with a specific name:
+
+```bash
+$ kind create cluster --name my-cluster
+```
+
+Learn how to get started with the [kind GitHub Quick Start Guide](https://kind.sigs.k8s.io/docs/user/quick-start/)
+
+### lazydocker
+
+A simple terminal UI for both docker and docker-compose, to quickly manage projects with containers:
+
+![lazydocker](./gifs/lazydocker.gif)
+
+```bash
+$ lazydocker
+```
+
+Check out the [lazydocker GitHub Repository](https://github.com/jesseduffield/lazydocker) for more information.
+
+### kubeseal
+
+Seal a Kubernetes secret using a public certificate:
+
+```bash
+$ kubeseal --cert=publicCert.pem --format=yaml < secret.yaml > sealedsecret.yaml
+```
+
+Read the [kubeseal GitHub Usage Guide](https://github.com/bitnami-labs/sealed-secrets#usage) to learn more.
+
+### stern
+
+Stream logs from multiple pods in real-time. For example, to stream logs from all pods with the label `app=myapp` in the `dev` namespace:
+
+```bash
+$ stern -n dev app=myapp
+```
+
+Learn more about Stern with its [GitHub Repository](https://github.com/stern/stern#usage)
+
+### skaffold
+
+Automate the workflow for building, pushing, and deploying applications in a Kubernetes environment. Here's how to start a development cycle on your local cluster:
+
+```bash
+$ skaffold dev
+```
+
+Get started with [Skaffold Documentation](https://skaffold.dev/docs/)
+
+### kubelogin
+
+Authenticate to a Kubernetes cluster using an OpenID Connect identity provider. For example:
+
+```bash
+$ kubelogin convert-kubeconfig -l azure
+```
+
+Learn more from [kubelogin GitHub Repository](https://github.com/Azure/kubelogin)
+
+### krew
+
+Krew is a plugin manager for `kubectl`. Use it to install and manage kubectl plugins. For example, to list all available plugins:
+
+```bash
+$ kubectl krew search
+```
+
+Explore [krew GitHub Repository](https://github.com/kubernetes-sigs/krew) to learn more.
+
+### kubens
+
+Switch between Kubernetes namespaces smoothly. For example, to switch to the `dev` namespace:
+
+```bash
+$ kubens dev
+```
+
+Check out [kubens GitHub Repository](https://github.com/ahmetb/kubectx#kubens) for more information.
+
+### kubectx
+
+Switch between Kubernetes contexts (clusters). For example, to switch to a context named `my-cluster`:
+
+```bash
+$ kubectx my-cluster
+```
+
+Learn more from the [kubectx GitHub Repository](https://github.com/ahmetb/kubectx)
+
+## License
+
 [MIT](LICENSE.md)
-
