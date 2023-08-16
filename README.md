@@ -1,4 +1,4 @@
-# miniDevOps: A DevOps Toolkit Operated within Docker (Alpine Linux)
+# miniDevOps: A DevOps Toolkit Operated within Docker
 
 `miniDevOps` is a Docker image designed to provide a comprehensive set of DevOps tools and utilities, all within an Alpine Linux environment.
 
