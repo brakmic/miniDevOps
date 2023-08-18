@@ -60,13 +60,24 @@ $ kind create cluster --name my-cluster
 
 With this setup, you can now establish a new cluster and then copy the updated `.kube/config` into `/root/local`. This directory will persist its content, even after a Docker shutdown.
 
-Additionally, a shell script titled `create_cluster.sh` is available. This script sets up the cluster and deploys the NGINX IngressController. Execute it with:
+Additionally, a shell script titled `create_cluster.sh` is available. This script sets up the cluster and deploys the NGINX IngressController.
+
+Execute it with:
 
 ```bash
 $ ./create_cluster.sh my-cluster
 ```
 
 ![create_cluster_script](./images/setup_cluster.png)
+
+## For Windows Users:
+If you are running Docker on Windows, an alternative PowerShell script is available. This script provides a similar functionality as the bash script for setting up the cluster and deploying the NGINX IngressController. You can run this script in PowerShell with:
+
+```powershell
+.\create_cluster.ps1 -CLUSTERNAME MyClusterName
+```
+
+Please ensure that both kind and kubectl command-line tools are installed and available in your PATH when you run this PowerShell script.
 
 ## Maintaining Persistent Kubernetes Clusters Across Docker Sessions
 
