@@ -138,6 +138,15 @@ RUN curl -Lo kubelogin.zip https://github.com/Azure/kubelogin/releases/download/
 ENV DIR /usr/bin
 RUN curl https://raw.githubusercontent.com/jesseduffield/lazydocker/master/scripts/install_update_linux.sh | bash
 
+# Install Operator SDK
+ENV OP_SDK_DIR=$HOME/operator-sdk
+RUN git clone https://github.com/operator-framework/operator-sdk $OP_SDK_DIR \
+	&& cd $HOME/operator-sdk \
+	&& git checkout master \
+	&& make install \
+	&& cd $HOME \
+	&& rm -rf $OP_SDK_DIR
+
 # Install pipenv
 RUN pip3 install pipenv
 

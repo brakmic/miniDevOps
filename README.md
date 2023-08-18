@@ -10,6 +10,7 @@
 * [kubectl](https://github.com/kubernetes/kubectl) (aliased with [`kubecolor`](https://github.com/kubecolor/kubecolor))
 * [helm](https://github.com/helm/helm)
 * [terraform](https://github.com/hashicorp/terraform)
+* [operator-sdk](https://sdk.operatorframework.io/)
 * [kind](https://github.com/kubernetes-sigs/kind)
 * [docker compose v2](https://github.com/docker/compose)
 * [krew](https://github.com/kubernetes-sigs/krew) (kubectl's plugin manager)
@@ -152,6 +153,29 @@ $ terraform apply
 ```
 
 Explore more with the [Terraform Learn](https://learn.hashicorp.com/terraform)
+
+### operator-sdk
+
+[Operator SDK](https://sdk.operatorframework.io/) is a toolkit to accelerate building Kubernetes native applications. With the Operator SDK, developers can build, test, and deploy Operators - applications that can manage and automate complex systems within a Kubernetes cluster. The SDK provides high-level APIs, useful abstractions, and project scaffolding that facilitates the fast development of Operators, without requiring deep Kubernetes API knowledge. The Operator SDK supports various operator types including Helm, Ansible, and Go, allowing developers to choose the best tool for their use case.
+
+Example usage:
+```bash
+# Create a new operator project
+$ operator-sdk init --domain=example.com --repo=github.com/example-inc/memcached-operator
+
+# Create a new API for the custom resource
+$ operator-sdk create api --group cache --version v1alpha1 --kind Memcached --resource --controller
+
+# Build and push the operator image
+$ make docker-build docker-push IMG=<some-registry>/memcached-operator:v0.0.1
+
+# Deploy the operator to a cluster
+$ make install
+$ make deploy IMG=<some-registry>/memcached-operator:v0.0.1
+```
+
+This sets up the basic scaffolding for your operator project, creates the necessary CRDs (Custom Resource Definitions), and allows you to push your operator to a container registry and deploy it to a Kubernetes cluster. From here, you can define your operator’s logic and specify how it should manage the application’s lifecycle.
+
 
 ### docker compose v2
 
