@@ -18,7 +18,7 @@ COPY config.yml $HOME/config.yml
 COPY create_cluster.sh $HOME/create_cluster.sh
 RUN chmod +x $HOME/create_cluster.sh
 
-# basic stuff
+# Basic Stuff
 RUN	apk add --no-cache \
 	bash \
 	bash-completion \
@@ -42,6 +42,27 @@ RUN	apk add --no-cache \
 	python3 \
 	py3-pip \
 	jq
+
+# Install glibc compatibility layer for Alpine
+RUN wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub \
+	&& wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.35-r1/glibc-2.35-r1.apk \
+	&& wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.35-r1/glibc-bin-2.35-r1.apk \
+	&& wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.35-r1/glibc-i18n-2.35-r1.apk \
+	&& apk add glibc-2.35-r1.apk \
+	&& apk add glibc-bin-2.35-r1.apk \
+	&& apk add glibc-i18n-2.35-r1.apk \
+	&& rm -rf *.apk \
+	&& /usr/glibc-compat/bin/localedef -i en_US -f UTF-8 en_US.UTF-8 \
+	&& /usr/glibc-compat/bin/localedef -i de_DE -f UTF-8 de_DE.UTF-8 \
+	&& /usr/glibc-compat/bin/localedef -i fr_FR -f UTF-8 fr_FR.UTF-8 \
+	&& /usr/glibc-compat/bin/localedef -i es_ES -f UTF-8 es_ES.UTF-8 \
+	&& /usr/glibc-compat/bin/localedef -i pt_PT -f UTF-8 pt_PT.UTF-8 \
+	&& /usr/glibc-compat/bin/localedef -i zh_CN -f UTF-8 zh_CN.UTF-8
+
+# Set environment for unicode
+ENV LC_ALL=en_US.UTF-8
+ENV LANG=en_US.UTF-8
+
 
 ENV DOCKER_VERSION 23.0.6-r4
 RUN apk add --no-cache \
@@ -125,6 +146,11 @@ COPY Pipfile* $HOME/
 
 # Install Python packages from Pipfile into the system Python environment
 RUN if [ -f "$HOME/Pipfile" ]; then cd $HOME && pipenv install --deploy --system; fi
+
+# Install Fonts
+RUN apk add --no-cache ttf-dejavu
+
+ENV PS1 "\[\e[0;32m\]\u@\h\[\e[0m\]:\[\e[0;34m\]\w\[\e[0m\]\$ "
 
 # Add a Welcome Message for miniDevOps Docker Image Users
 RUN echo 'echo -e "\n\033[1;32m🚀 Welcome to miniDevOps: Your DevOps Toolkit Operated within Docker! 🚀\n\033[0m"' >> $HOME/.bashrc && \
