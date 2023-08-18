@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 CLUSTERNAME=$1
 
 kind create cluster --name $CLUSTERNAME --config=config.yml
