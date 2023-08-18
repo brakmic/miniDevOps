@@ -2,7 +2,8 @@
 
 `miniDevOps` is a Docker image designed to provide a comprehensive set of DevOps tools and utilities, all within an Alpine Linux environment.
 
-![Docker Pulls](https://img.shields.io/docker/pulls/brakmic/devops?style=plastic&logo=docker)
+![Docker Pulls](https://badgen.net/docker/pulls/brakmic/devops?icon=docker)
+[![Docker Image Size](https://badgen.net/docker/size/brakmic/devops?icon=docker&label=image%20size)](https://hub.docker.com/r/brakmic/devops/)
 
 ## Included DevOps Tools
 
