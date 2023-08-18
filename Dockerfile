@@ -8,23 +8,13 @@ COPY .bash_completion $HOME/.bash_completion
 COPY .nanorc $HOME/.nanorc
 RUN mkdir $HOME/.kube
 
-# this is the config file for k8s
 COPY config $HOME/.kube/config
 RUN chmod o-r $HOME/.kube/config
 RUN chmod g-r $HOME/.kube/config
 ENV KUBECONFIG $HOME/.kube/config
 
-# this YAML can be used to apply patches needed to open ports for ingresses under Kind
-# if you create a cluster without referring to this file you'll later need to apply them manually
-# it is recommended to add the flag --config=/root/config.yml when creating new clusters
 COPY config.yml $HOME/config.yml
-# you will also need to deploy one of the available ingress controllers that will listen on 80/443 ports
-# check this document to learn how to deploy them: 
-# NGINX: https://kind.sigs.k8s.io/docs/user/ingress/#ingress-nginx
-# Contour: https://kind.sigs.k8s.io/docs/user/ingress/#contour
-# Kong: https://kind.sigs.k8s.io/docs/user/ingress/#ingress-kong
 
-# helper script that installs k8s clusters and deploys nginx ingress controllers
 COPY create_cluster.sh $HOME/create_cluster.sh
 RUN chmod +x $HOME/create_cluster.sh
 
@@ -50,35 +40,25 @@ RUN	apk add --no-cache \
 	ncurses \
 	go \
 	python3 \
+	py3-pip \
 	jq
 
-# Docker
-# https://www.docker.com/
 ENV DOCKER_VERSION 23.0.6-r4
 RUN apk add --no-cache \
 	docker=${DOCKER_VERSION}
 
-# docker-compose
-# https://docs.docker.com/compose/
 ENV COMPOSE_VERSION 2.17.3-r5
 RUN apk add docker-cli-compose=${COMPOSE_VERSION}
 
-# kubectl
-# https://kubernetes.io/docs/reference/kubectl/
 RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl \
 	-s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
 RUN chmod +x ./kubectl
 RUN mv ./kubectl /usr/bin/kubectl
 RUN kubectl completion bash > $COMPLETIONS/kubectl.bash
 
-# kubecolor
 RUN go install github.com/hidetatz/kubecolor/cmd/kubecolor@latest
-
-# stern
 RUN go install github.com/stern/stern@latest
 
-# helm
-# https://helm.sh/
 ENV HELM_VERSION 3.11.3
 RUN curl -LO https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz
 RUN tar -zxvf helm-v${HELM_VERSION}-linux-amd64.tar.gz
@@ -87,8 +67,6 @@ RUN mv linux-amd64/helm /usr/bin/helm
 RUN helm completion bash > $COMPLETIONS/helm.bash
 RUN rm -rf helm-v${HELM_VERSION}-linux-amd64.tar.gz linux-amd64
 
-# terraform
-# https://www.terraform.io/
 ENV TF_VERSION 1.5.5
 RUN curl -LO https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip
 RUN unzip -x terraform_${TF_VERSION}_linux_amd64.zip
@@ -96,31 +74,22 @@ RUN chmod +x terraform
 RUN mv ./terraform /usr/bin/terraform
 RUN rm terraform_${TF_VERSION}_linux_amd64.zip
 
-# skaffold
-# https://skaffold.dev/
 RUN curl -Lo /usr/bin/skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
 RUN chmod +x /usr/bin/skaffold
 RUN skaffold completion bash > ${COMPLETIONS}/skaffold.bash
 
-# kubeseal
 ENV KUBESEAL_VERSION 0.23.0
-RUN mkdir ./kubeseal_install && cd ./kubeseal_install
 RUN curl -LO https://github.com/bitnami-labs/sealed-secrets/releases/download/v${KUBESEAL_VERSION}/kubeseal-${KUBESEAL_VERSION}-linux-amd64.tar.gz
 RUN tar -zxvf kubeseal-${KUBESEAL_VERSION}-linux-amd64.tar.gz
 RUN chmod +x ./kubeseal
-RUN mv ./kubeseal /usr/bin/kubeseal && cd ..
-RUN rm -rf kubeseal_install
+RUN mv ./kubeseal /usr/bin/kubeseal
 
-# kind
-# https://kind.sigs.k8s.io/
 ENV KIND_VERSION 0.20.0
 RUN curl -Lo ./kind https://kind.sigs.k8s.io/dl/v${KIND_VERSION}/kind-linux-amd64
 RUN chmod +x ./kind
 RUN mv ./kind /usr/bin/kind
 RUN kind completion bash > ${COMPLETIONS}/kind.bash
 
-# kubectl's plugin manager krew
-# https://krew.sigs.k8s.io/
 ENV KREW_VERSION 0.4.4
 RUN mkdir /tmp/krew \
 	&& cd /tmp/krew \
@@ -131,8 +100,6 @@ RUN mkdir /tmp/krew \
 	&& rm -rf /tmp/krew \
 	&& echo export 'PATH=$HOME/.krew/bin:$PATH' >> .bashrc
 
-# kubectx and kubens for k8s
-# https://github.com/ahmetb/kubectx
 RUN cd /tmp \
 	&& git clone https://github.com/ahmetb/kubectx \
 	&& cd kubectx \
@@ -142,16 +109,40 @@ RUN cd /tmp \
 	&& cd .. \
 	&& rm -rf kubectx
 
-# azure kubelogin
-# https://azure.github.io/kubelogin/
 RUN curl -Lo kubelogin.zip https://github.com/Azure/kubelogin/releases/download/v0.0.31/kubelogin-linux-amd64.zip \
 	&& unzip -d kubelogin kubelogin.zip \
 	&& mv kubelogin/bin/linux_amd64/kubelogin /usr/bin \
 	&& rm -rf kubelogin
 
-# lazydocker
-# https://github.com/jesseduffield/lazydocker
 ENV DIR /usr/bin
 RUN curl https://raw.githubusercontent.com/jesseduffield/lazydocker/master/scripts/install_update_linux.sh | bash
+
+# Install pipenv
+RUN pip3 install pipenv
+
+# Copy Pipfile and Pipfile.lock, if available
+COPY Pipfile* $HOME/
+
+# Install Python packages from Pipfile into the system Python environment
+RUN if [ -f "$HOME/Pipfile" ]; then cd $HOME && pipenv install --deploy --system; fi
+
+# Add a Welcome Message for miniDevOps Docker Image Users
+RUN echo 'echo -e "\n\033[1;32m🚀 Welcome to miniDevOps: Your DevOps Toolkit Operated within Docker! 🚀\n\033[0m"' >> $HOME/.bashrc && \
+	echo 'echo -e "\033[1;34mThis Docker environment is your ultimate set of tools for Kubernetes and DevOps magic.\n\033[0m"' >> $HOME/.bashrc && \
+	echo 'echo -e "\n\033[1;36m🐍 Python & Pipenv: \033[0m"' >> $HOME/.bashrc && \
+	echo 'echo -e "  🛠 Develop Python scripts: pipenv install <package> & pipenv run python <script.py>\n"' >> $HOME/.bashrc && \
+	echo 'echo -e "\033[1;33m🔱 Kubernetes: \033[0m"' >> $HOME/.bashrc && \
+	echo 'echo -e "  🛠 Launch your cluster: kind create cluster --name my-cluster"' >> $HOME/.bashrc && \
+	echo 'echo -e "  🌐 Manage your deployments: kubectl get pods\n"' >> $HOME/.bashrc && \
+	echo 'echo -e "\033[1;35m⚓ Helm: \033[0m"' >> $HOME/.bashrc && \
+	echo 'echo -e "  🎁 Orchestrate with Helm: helm install <name> <chart>\n"' >> $HOME/.bashrc && \
+	echo 'echo -e "\033[1;32m🌿 Terraform: \033[0m"' >> $HOME/.bashrc && \
+	echo 'echo -e "  🛠 Initialize & Apply Configs: terraform init && terraform apply\n"' >> $HOME/.bashrc && \
+	echo 'echo -e "\033[1;34m🐳 Docker & Compose: \033[0m"' >> $HOME/.bashrc && \
+	echo 'echo -e "  🚀 Manage Containers: docker ps"' >> $HOME/.bashrc && \
+	echo 'echo -e "  🌟 Orchestrate Services: docker compose up -d\n\033[0m"' >> $HOME/.bashrc && \
+	echo 'echo -e "\033[1;35m🔗 GitHub Repository: \033[0m"' >> $HOME/.bashrc && \
+	echo 'echo -e "  🌟 Check out our code, report issues or contribute: \033[4mhttps://github.com/brakmic/miniDevOps\033[0m"' >> $HOME/.bashrc && \
+	echo 'echo -e "\n\033[1;33m⭐ If you find this Docker image helpful, please consider giving us a star on GitHub! ⭐\n\033[0m"' >> $HOME/.bashrc
 
 ENTRYPOINT [ "bash" ]

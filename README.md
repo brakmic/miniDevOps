@@ -30,6 +30,7 @@
 * gcc
 * go
 * python3
+* pip3
 * make
 * zip
 * lynx
@@ -38,6 +39,21 @@
 * jq
 * ncurses
 * apache2-ssl, accompanied by apache2-utils
+
+## Python and Pipenv Development Environment
+
+`miniDevOps` includes Python and Pipenv, making it a convenient environment for Python development. Whether you're creating scripts to manage your infrastructure or developing full-fledged applications, this Docker image is equipped to handle your Python needs.
+
+* **Python**: A versatile and widely-used programming language. The image includes Python 3, allowing you to run and develop Python applications.
+
+* **Pipenv**: The officially recommended Python packaging tool from Python.org. It automatically creates and manages a virtual environment for your projects, as well as adds/removes packages from your `Pipfile` as you install/uninstall packages. It also generates the `Pipfile.lock`, which is used to produce deterministic builds.
+
+Example usage:
+```bash
+$ pipenv install requests
+$ pipenv run python my_script.py
+```
+
 ## Setup
 
 The [config.yml](./config.yml) file contains a suggested Kind cluster configuration. Feel free to modify it according to your specific needs.
