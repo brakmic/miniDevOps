@@ -93,6 +93,17 @@ This setup allows you to create a new cluster and then copy the updated `.kube/c
 
 The Docker image for `miniDevOps` is available at: [Docker Hub](https://hub.docker.com/r/brakmic/devops)
 
+## HOWTOs
+
+The following guides provide detailed instructions on how to use some of the included DevOps tools in the `miniDevOps` Docker image:
+
+1. **kubeseal**: Learn how to [seal a secret](https://github.com/brakmic/miniDevOps/blob/main/howtos/kubeseal.md) in Kubernetes. 
+   
+2. **skaffold**: Understand the [automated workflow](https://github.com/brakmic/miniDevOps/blob/main/howtos/skaffold.md) for building, pushing, and deploying applications with Skaffold.  
+   
+3. **stern**: Get to know how to [stream logs](https://github.com/brakmic/miniDevOps/blob/main/howtos/stern.md) from multiple pods in real-time.
+
+
 ## Useful Commands and Examples
 
 ### kubectl
