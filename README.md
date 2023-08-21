@@ -10,6 +10,7 @@
 * [kubectl](https://github.com/kubernetes/kubectl) (aliased with [`kubecolor`](https://github.com/kubecolor/kubecolor))
 * [helm](https://github.com/helm/helm)
 * [terraform](https://github.com/hashicorp/terraform)
+* [flux](https://fluxcd.io)
 * [operator-sdk](https://sdk.operatorframework.io/)
 * [kind](https://github.com/kubernetes-sigs/kind)
 * [docker compose v2](https://github.com/docker/compose)
@@ -176,6 +177,32 @@ $ make deploy IMG=<some-registry>/memcached-operator:v0.0.1
 
 This sets up the basic scaffolding for your operator project, creates the necessary CRDs (Custom Resource Definitions), and allows you to push your operator to a container registry and deploy it to a Kubernetes cluster. From here, you can define your operator’s logic and specify how it should manage the application’s lifecycle.
 
+### flux
+
+[Flux](https://fluxcd.io) is a toolset for keeping Kubernetes clusters in sync with infrastructure-as-code systems, like Git repositories, and automating updates to configuration and images. It uses a pull-based approach to continuously deploy and monitor applications. With Flux, you can ensure that your cluster's state matches the versioned sources, allowing for GitOps practices in your workflow.
+
+Flux supports multi-tenancy and scales to multiple clusters, ensuring declarative infrastructure for both small-scale applications and large-scale operations. It comes with powerful features like automatic updates, policy-driven deployments, and integrations with prominent Kubernetes-native tools.
+
+Example usage:
+```bash
+# Bootstrap Flux on your cluster
+$ flux bootstrap github \
+  --owner=<your-user> \
+  --repository=<your-repository> \
+  --branch=main \
+  --path=./clusters/your-cluster \
+  --personal
+
+# Check components status
+$ flux check
+
+# Sync your cluster state with the Git repository
+$ flux reconcile source git flux-system
+```
+
+With these commands, you've set up Flux to manage your Kubernetes cluster according to the infrastructure-as-code definitions in your Git repository. Flux will now automatically ensure that your cluster's state matches the configurations in the Git repository, and any change to the repository will be promptly applied to the cluster.
+
+Dive deeper with the [Flux Official Documentation](https://fluxcd.io/docs/introduction/).
 
 ### docker compose v2
 
