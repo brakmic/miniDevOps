@@ -42,7 +42,7 @@ RUN	apk add --no-cache \
 	python3 \
 	py3-pip \
 	jq \
-        yq \
+	yq \
 	ttf-dejavu
 
 ENV DOCKER_VERSION 23.0.6-r4
