@@ -2,8 +2,8 @@
 
 HOME=/root
 COMPLETIONS=/usr/share/bash-completion/completions
-DOCKER_VERSION=23.0.6-r4
-COMPOSE_VERSION=2.17.3-r5
+DOCKER_VERSION=24.0.5-r1
+COMPOSE_VERSION=2.20.3-r0
 HELM_VERSION=3.11.3
 TF_VERSION=1.5.5
 KUBESEAL_VERSION=0.23.0
@@ -15,6 +15,7 @@ OP_SDK_DIR=$HOME/operator-sdk
 chmod o-r $HOME/.kube/config
 chmod g-r $HOME/.kube/config
 chmod +x $HOME/create_cluster.sh
+chmod +x /tmp/start.sh
 
 # Basic Stuff
 apk add --no-cache \
@@ -99,7 +100,6 @@ curl -Lo ./kind https://kind.sigs.k8s.io/dl/v${KIND_VERSION}/kind-linux-amd64 \
 	&& mv ./kind /usr/bin/kind \
 	&& kind completion bash > ${COMPLETIONS}/kind.bash
 
-
 mkdir /tmp/krew \
 	&& cd /tmp/krew \
 	&& curl -fsSL https://github.com/kubernetes-sigs/krew/releases/download/v${KREW_VERSION}/krew-linux_amd64.tar.gz \
@@ -125,6 +125,18 @@ curl -Lo kubelogin.zip https://github.com/Azure/kubelogin/releases/download/v0.0
 
 curl https://raw.githubusercontent.com/jesseduffield/lazydocker/master/scripts/install_update_linux.sh | bash
 
+# Install usql with the following additional database drivers:
+# cosmos    - for Microsoft Azure Cosmos DB support
+# cassandra - for Apache Cassandra support
+# bigquery  - for Google BigQuery support
+# spanner   - for Google Cloud Spanner support
+# adodb     - for Microsoft ActiveX Data Objects support
+# presto    - for PrestoDB support
+# sapase    - for SAP Adaptive Server Enterprise support
+# saphana   - for SAP HANA support
+go install -tags 'cosmos cassandra bigquery spanner adodb presto sapase saphana no_sqlite3' github.com/xo/usql@latest
+
+
 # Install Operator SDK
 git clone https://github.com/operator-framework/operator-sdk $OP_SDK_DIR \
 	&& cd $HOME/operator-sdk \
@@ -137,9 +149,18 @@ git clone https://github.com/operator-framework/operator-sdk $OP_SDK_DIR \
 curl -s https://fluxcd.io/install.sh | bash \
 	&& flux completion bash > ${COMPLETIONS}/flux.bash
 
+# Enter python virtual environment
+python3 -m venv $HOME/.venv
+. $HOME/.venv/bin/activate
+
 # Install pipenv
-pip3 install pipenv
+pip install pipenv
+cd $HOME
 
-# Install Python packages from Pipfile into the system Python environment
-if [ -f "$HOME/Pipfile" ]; then cd $HOME && pipenv install --deploy --system; fi
+# Install Python packages from Pipfile
+if [ -f "Pipfile" ]; then
+  pipenv install --deploy
+fi
 
+# Exit the virtual environment
+deactivate

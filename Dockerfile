@@ -1,4 +1,4 @@
-FROM alpine:3.18
+FROM alpine:edge
 
 ENV HOME /root
 ENV COMPLETIONS /usr/share/bash-completion/completions
@@ -11,6 +11,7 @@ COPY config $HOME/.kube/config
 COPY config.yml $HOME/config.yml
 COPY create_cluster.sh $HOME/create_cluster.sh
 COPY Pipfile* $HOME/
+COPY start.sh /tmp/start.sh
 
 # Copy the installation script
 COPY install.sh /tmp/install.sh
@@ -30,4 +31,6 @@ COPY welcome_message.sh /tmp/welcome_message.sh
 RUN cat /tmp/welcome_message.sh >> $HOME/.bashrc \
 	&& rm /tmp/welcome_message.sh
 
-ENTRYPOINT [ "bash" ]
+ENTRYPOINT ["/tmp/start.sh"]
+
+CMD ["bash"]

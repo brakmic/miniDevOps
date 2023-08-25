@@ -22,6 +22,7 @@
 * [kubeseal](howtos/kubeseal.md)
 * [kubelogin](https://github.com/Azure/kubelogin)
 * [lazydocker](https://github.com/jesseduffield/lazydocker)
+* [usql](https://github.com/xo/usql)
 
 ## Additional Packages
 
@@ -305,6 +306,28 @@ $ kubectx my-cluster
 ```
 
 Learn more from the [kubectx GitHub Repository](https://github.com/ahmetb/kubectx)
+
+### uSQL
+
+uSQL is a modern query language and execution engine that facilitates data querying across different platforms and data sources. It provides a unified SQL interface for various databases and file formats.
+
+#### Features
+
+* **Unified Querying**: Write SQL queries that work across different databases and file formats.
+* **Optimization Engine**: Automatic optimization for complex queries to ensure efficient execution.
+* **Extensibility**: Easy to extend with custom functions and data sources.
+
+uSQL supports a wide range of databases and file formats including MySQL, PostgreSQL, SQLite, CSV, Excel, and more.
+#### Usage
+
+You can execute queries using the uSQL command-line interface:
+
+```sql
+usql "SELECT * FROM file.csv WHERE column > 10"
+```
+
+For more detailed information, visit the [official documentation](https://usql.io/docs).
+
 
 ## License
 
