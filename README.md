@@ -326,7 +326,7 @@ You can execute queries using the uSQL command-line interface:
 usql "SELECT * FROM file.csv WHERE column > 10"
 ```
 
-For more detailed information, visit the [official documentation](https://usql.io/docs).
+For more detailed information, visit the [official documentation](https://github.com/xo/usql#features-and-compatibility).
 
 
 ## License
