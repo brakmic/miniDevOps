@@ -9,6 +9,7 @@ TF_VERSION=1.5.5
 KUBESEAL_VERSION=0.23.0
 KIND_VERSION=0.20.0
 KREW_VERSION=0.4.4
+K9S_VERSION=0.27.4
 DIR=/usr/bin
 OP_SDK_DIR=$HOME/operator-sdk
 
@@ -148,6 +149,9 @@ git clone https://github.com/operator-framework/operator-sdk $OP_SDK_DIR \
 # Install Flux CD
 curl -s https://fluxcd.io/install.sh | bash \
 	&& flux completion bash > ${COMPLETIONS}/flux.bash
+
+# Install k9s
+go install github.com/derailed/k9s@v${K9S_VERSION}
 
 # Enter python virtual environment
 python3 -m venv $HOME/.venv
