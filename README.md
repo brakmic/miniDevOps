@@ -8,6 +8,8 @@
 ## Included DevOps Tools
 
 * [kubectl](https://github.com/kubernetes/kubectl) (aliased with [`kubecolor`](https://github.com/kubecolor/kubecolor))
+* [k9s](https://k9scli.io/)
+* [kube-shell](https://github.com/cloudnativelabs/kube-shell)
 * [helm](https://github.com/helm/helm)
 * [terraform](https://github.com/hashicorp/terraform)
 * [flux](https://fluxcd.io)
@@ -47,9 +49,9 @@
 
 `miniDevOps` includes Python and Pipenv, making it a convenient environment for Python development. Whether you're creating scripts to manage your infrastructure or developing full-fledged applications, this Docker image is equipped to handle your Python needs.
 
-* **Python**: A versatile and widely-used programming language. The image includes Python 3, allowing you to run and develop Python applications.
+* **Python**: The image includes Python 3, allowing you to run and develop Python applications.
 
-* **Pipenv**: The officially recommended Python packaging tool from Python.org. It automatically creates and manages a virtual environment for your projects, as well as adds/removes packages from your `Pipfile` as you install/uninstall packages. It also generates the `Pipfile.lock`, which is used to produce deterministic builds.
+* **Pipenv**: It automatically creates and manages a virtual environment for your projects, as well as adds/removes packages from your `Pipfile` as you install/uninstall packages. It also generates the `Pipfile.lock`, which is used to produce deterministic builds.
 
 Example usage:
 ```bash
