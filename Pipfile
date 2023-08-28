@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 pyyaml = "*"
+kube-shell = "*"
 
 [dev-packages]
 
