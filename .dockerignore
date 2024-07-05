@@ -1,1 +1,10 @@
 .bash_history
+.kube/config.lock
+node_modules
+.git
+.kube/
+projects/
+session/
+.cache/
+.DS_Store
+
