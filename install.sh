@@ -2,21 +2,21 @@
 
 HOME=/root
 COMPLETIONS=/usr/share/bash-completion/completions
-DOCKER_VERSION=24.0.6-r3
-COMPOSE_VERSION=2.22.0-r1
-HELM_VERSION=3.13.1
-TF_VERSION=1.6.1
-KUBESEAL_VERSION=0.24.1
-KIND_VERSION=0.20.0
+DOCKER_VERSION=27.0.3-r1
+DOCKER_CLI_VERSION=27.0.3-r1
+COMPOSE_VERSION=2.28.1-r1
+HELM_VERSION=3.14.0
+TF_VERSION=1.9.1
+KUBESEAL_VERSION=0.27.0
+KIND_VERSION=0.23.0
 KREW_VERSION=0.4.4
-K9S_VERSION=0.27.4
+K9S_VERSION=0.32.5
 DIR=/usr/bin
 OP_SDK_DIR=$HOME/operator-sdk
 
 chmod o-r $HOME/.kube/config
 chmod g-r $HOME/.kube/config
 chmod +x $HOME/create_cluster.sh
-chmod +x /tmp/start.sh
 
 # Basic Stuff
 apk add --no-cache \
@@ -47,6 +47,7 @@ apk add --no-cache \
 
 apk add --no-cache \
 	docker=${DOCKER_VERSION} \
+	docker-cli=${DOCKER_CLI_VERSION} \
 	docker-cli-compose=${COMPOSE_VERSION}
 
 # Install glibc compatibility layer for Alpine
@@ -139,6 +140,7 @@ go install -tags 'cosmos cassandra bigquery spanner adodb presto sapase saphana 
 
 
 # Install Operator SDK
+export GOBIN=/usr/local/bin
 git clone https://github.com/operator-framework/operator-sdk $OP_SDK_DIR \
 	&& cd $HOME/operator-sdk \
 	&& git checkout master \
