@@ -16,3 +16,4 @@ alias h="helm"
 export HISTTIMEFORMAT="%d/%m/%y %T "
 export PS1="\[\e[31m\][\[\e[m\]\[\e[38;5;172m\]\u\[\e[m\]@\[\e[38;5;153m\]\h\[\e[m\] \[\e[38;5;214m\]\W\[\e[m\]\[\e[31m\]]\[\e[m\]\\$ "
 export HISTCONTROL=ignorespace:ignoredups:erasedups
+export TERM=xterm-256color
