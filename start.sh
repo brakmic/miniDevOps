@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 HOME=/root
 echo 'export PIPENV_IGNORE_VIRTUALENVS=1' >> $HOME/.bashrc
