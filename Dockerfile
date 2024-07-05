@@ -15,7 +15,11 @@ COPY start.sh /tmp/start.sh
 
 # Copy the installation script
 COPY install.sh /tmp/install.sh
-RUN chmod +x /tmp/install.sh \
+
+# Set permissions and run the installation script
+RUN chmod +x /tmp/install.sh /tmp/start.sh $HOME/create_cluster.sh \
+	&& chmod o-r $HOME/.kube/config \
+	&& chmod g-r $HOME/.kube/config \
 	&& /tmp/install.sh \
 	&& rm /tmp/install.sh
 
