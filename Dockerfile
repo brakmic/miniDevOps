@@ -1,7 +1,7 @@
 FROM alpine:edge
 
-ENV HOME /root
-ENV COMPLETIONS /usr/share/bash-completion/completions
+ENV HOME=/root
+ENV COMPLETIONS=/usr/share/bash-completion/completions
 
 # Basic scripts and configs
 COPY .bashrc $HOME/.bashrc
@@ -28,7 +28,7 @@ ENV LC_ALL=en_US.UTF-8
 ENV LANG=en_US.UTF-8
 
 # Prompt
-ENV PS1 "\[\e[0;32m\]\u@\h\[\e[0m\]:\[\e[0;34m\]\w\[\e[0m\]\$ "
+ENV PS1="\[\e[0;32m\]\u@\h\[\e[0m\]:\[\e[0;34m\]\w\[\e[0m\]\$ "
 
 # Add a Welcome Message
 COPY welcome_message.sh /tmp/welcome_message.sh
