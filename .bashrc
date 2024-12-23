@@ -1,19 +1,30 @@
-export PATH=$HOME/go/bin:$HOME/.krew/bin:$PATH
+export PATH=$HOME/.krew/bin:$PATH
 
-source /etc/bash/bash_completion.sh
-source $HOME/.bash_completion
+# Enable bash completion if available
+if [ -f /etc/bash_completion ]; then
+    . /etc/bash_completion
+fi
 
-alias update='apk update && apk upgrade'
+if [ -f "$HOME/.bash_completion" ]; then
+    . "$HOME/.bash_completion"
+fi
+
+# Aliases
 alias l='ls -CF'
 alias la='ls -A'
 alias ll='ls -alF'
 alias ls='ls --color=auto'
 alias kubectl="kubecolor"
-alias k="kubecolor"
-alias tf="terraform"
-alias h="helm"
+alias k="sudo kubecolor"
+alias tf="sudo terraform"
+alias h="sudo helm"
 
+# History settings
 export HISTTIMEFORMAT="%d/%m/%y %T "
-export PS1="\[\e[31m\][\[\e[m\]\[\e[38;5;172m\]\u\[\e[m\]@\[\e[38;5;153m\]\h\[\e[m\] \[\e[38;5;214m\]\W\[\e[m\]\[\e[31m\]]\[\e[m\]\\$ "
 export HISTCONTROL=ignorespace:ignoredups:erasedups
+
+# Prompt
+export PS1="\[\e[0;32m\]\u@\h\[\e[m\]:\[\e[0;34m\]\w\[\e[m\]\$ "
+
+# Terminal settings
 export TERM=xterm-256color
