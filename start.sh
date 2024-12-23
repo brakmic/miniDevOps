@@ -1,10 +1,10 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-HOME=/root
-echo 'export PIPENV_IGNORE_VIRTUALENVS=1' >> $HOME/.bashrc
+# Write or export environment variables to the user's .bashrc
+echo 'export PIPENV_IGNORE_VIRTUALENVS=1' >> "$HOME/.bashrc"
 
-# Activate the virtual environment
-. $HOME/.venv/bin/activate
+# Activate the Python virtual environment
+. "$HOME/.venv/bin/activate"
 
-# Execute the command provided in the docker run
+# Now execute the command passed into this entrypoint
 exec "$@"

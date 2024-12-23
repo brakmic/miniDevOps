@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-FLAGFILE="/root/.welcome_shown"
+FLAGFILE="${HOME}/.welcome_shown"
 
 if [ ! -f "$FLAGFILE" ]; then
 
