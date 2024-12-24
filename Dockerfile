@@ -12,11 +12,7 @@ ENV GOBIN=/usr/local/bin
 ENV COMPLETIONS=/usr/share/bash-completion/completions
 ENV LANG=en_US.UTF-8
 ENV LC_ALL=en_US.UTF-8
-ENV PIPENV_VERBOSITY=-1
 
-# Derived directories
-ENV KREW_DIR=$HOME/.krew
-ENV VENV_DIR=$HOME/.venv
 
 ###############################################################################
 # (1) Enable contrib and non-free repositories
@@ -40,19 +36,8 @@ RUN apt update && apt install -y --no-install-recommends \
     wget \
     unzip \
     ca-certificates \
-    python3 \
-    python3-pip \
-    python3-venv \
     gnupg \
-    jq \
-    vim \
-    nano \
-    htop \
-    apache2-utils \
-    locales \
-    gcc \
-    make \
-    openssl
+    locales
 
 # Configure locales
 RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && \
@@ -120,18 +105,7 @@ RUN curl -Lo kind https://kind.sigs.k8s.io/dl/v${KIND_VERSION}/kind-linux-amd64 
     && mv kind /usr/local/bin/kind \
     && kind completion bash > ${COMPLETIONS}/kind
 
-# 4h) Krew
-ARG KREW_VERSION=0.4.4
-RUN mkdir -p /tmp/krew \
-    && cd /tmp/krew \
-    && curl -fsSL https://github.com/kubernetes-sigs/krew/releases/download/v${KREW_VERSION}/krew-linux_amd64.tar.gz \
-    | tar -zxf- \
-    && ./krew-linux_amd64 install krew \
-    && cd $HOME \
-    && rm -rf /tmp/krew \
-    && echo "export PATH=\$PATH:$KREW_DIR/bin" >> $HOME/.bashrc
-
-# 4i) kubectx + kubens
+# 4h) kubectx + kubens
 RUN cd /tmp && git clone https://github.com/ahmetb/kubectx.git \
     && cd kubectx \
     && mv kubectx /usr/local/bin/kubectx \
@@ -140,7 +114,7 @@ RUN cd /tmp && git clone https://github.com/ahmetb/kubectx.git \
     && cd /tmp \
     && rm -rf kubectx
 
-# 4j) kubelogin
+# 4i) kubelogin
 ARG KUBELOGIN_VERSION=0.1.6
 RUN curl -LO https://github.com/Azure/kubelogin/releases/download/v${KUBELOGIN_VERSION}/kubelogin-linux-amd64.zip \
     && unzip kubelogin-linux-amd64.zip -d kubelogin \
@@ -148,11 +122,11 @@ RUN curl -LO https://github.com/Azure/kubelogin/releases/download/v${KUBELOGIN_V
     && chmod +x /usr/local/bin/kubelogin \
     && rm -rf kubelogin kubelogin-linux-amd64.zip
 
-# 4k) lazydocker
+# 4j) lazydocker
 RUN DIR=/usr/local/bin \
     curl -s https://raw.githubusercontent.com/jesseduffield/lazydocker/master/scripts/install_update_linux.sh | bash
 
-# 4l) usql
+# 4k) usql
 ARG USQL_VERSION=0.19.14
 RUN curl -LO https://github.com/xo/usql/releases/download/v${USQL_VERSION}/usql-${USQL_VERSION}-linux-amd64.tar.bz2 \
     && tar -xjf usql-${USQL_VERSION}-linux-amd64.tar.bz2 \
@@ -160,7 +134,7 @@ RUN curl -LO https://github.com/xo/usql/releases/download/v${USQL_VERSION}/usql-
     && chmod +x /usr/local/bin/usql \
     && rm usql-${USQL_VERSION}-linux-amd64.tar.bz2
 
-# 4m) Operator SDK
+# 4l) Operator SDK
 ARG OPERATOR_SDK_VERSION=1.38.0
 RUN set -eux; \
     ARCH=$(case $(uname -m) in \
@@ -174,32 +148,17 @@ RUN set -eux; \
     chmod +x "operator-sdk_${OS}_${ARCH}"; \
     mv "operator-sdk_${OS}_${ARCH}" /usr/local/bin/operator-sdk
 
-# 4n) Flux
+# 4m) Flux
 RUN curl -s https://fluxcd.io/install.sh | bash \
     && flux completion bash > ${COMPLETIONS}/flux
 
-# 4o) K9s
+# 4n) K9s
 ARG K9S_VERSION=0.32.7
 RUN curl -Lo /tmp/k9s.tar.gz https://github.com/derailed/k9s/releases/download/v${K9S_VERSION}/k9s_Linux_amd64.tar.gz \
     && tar -C /tmp -xzf /tmp/k9s.tar.gz k9s \
     && mv /tmp/k9s /usr/local/bin/k9s \
     && chmod +x /usr/local/bin/k9s \
     && rm /tmp/k9s.tar.gz
-
-###############################################################################
-# (5) Python environment + pipenv + kube-shell
-###############################################################################
-ENV VENV_DIR=$HOME/.venv
-RUN python3 -m venv $VENV_DIR \
-    && . $VENV_DIR/bin/activate \
-    && pip install --upgrade pip \
-    && pip install pipenv
-
-COPY Pipfile* $HOME/
-RUN . $VENV_DIR/bin/activate \
-    && cd $HOME \
-    && if [ -f "Pipfile" ]; then pipenv install --deploy; fi \
-    && deactivate
 
 ###############################################################################
 #                           Stage 2: Runner
@@ -212,6 +171,12 @@ FROM debian:bookworm-slim AS runner
 ARG USER=minidevops
 ENV RUNNER_HOME=/home/${USER}
 ENV HOME=${RUNNER_HOME}
+
+ENV PIPENV_VERBOSITY=-1
+
+# Derived directories
+ENV KREW_DIR=$HOME/.krew
+ENV VENV_DIR=$HOME/.venv
 
 ###############################################################################
 # (1) Enable contrib and non-free repositories
@@ -233,8 +198,12 @@ RUN apt update && apt install -y --no-install-recommends \
     bash-completion \
     locales \
     ca-certificates \
+    git \
     python3 \
     python3-pip \
+    python3-venv \
+    gcc \
+    make \
     nano \
     vim \
     htop \
@@ -247,6 +216,8 @@ RUN apt update && apt install -y --no-install-recommends \
     hping3 \
     manpages-posix \
     man-db \
+    tree \
+    openssl \
     && sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen \
     && locale-gen \
     && apt clean && rm -rf /var/lib/apt/lists/*
@@ -284,8 +255,8 @@ RUN adduser --disabled-password --gecos "" --uid 1000 ${USER} \
 ###############################################################################
 COPY --from=builder /usr/local/bin/ /usr/local/bin/
 COPY --from=builder /usr/share/bash-completion/completions /usr/share/bash-completion/completions
-COPY --from=builder /root/.krew $HOME/.krew
-COPY --from=builder /root/.venv $HOME/.venv
+# COPY --from=builder /root/.krew $HOME/.krew
+# COPY --from=builder /root/.venv $HOME/.venv
 
 # Put the user’s config in /home/minidevops
 COPY .bashrc $HOME/.bashrc
@@ -301,6 +272,34 @@ COPY config $HOME/.kube/config
 # Put the entrypoint + welcome script in /tmp
 COPY start.sh /tmp/start.sh
 COPY welcome_message.sh /tmp/welcome_message.sh
+
+###############################################################################
+# Krew - plugin manager for kubectl
+###############################################################################
+ARG KREW_VERSION=0.4.4
+RUN mkdir -p /tmp/krew \
+    && cd /tmp/krew \
+    && curl -fsSL https://github.com/kubernetes-sigs/krew/releases/download/v${KREW_VERSION}/krew-linux_amd64.tar.gz \
+    | tar -zxf- \
+    && ./krew-linux_amd64 install krew \
+    && cd $HOME \
+    && rm -rf /tmp/krew \
+    && echo "export PATH=\$PATH:$KREW_DIR/bin" >> $HOME/.bashrc
+
+###############################################################################
+# Python environment + pipenv + kube-shell
+###############################################################################
+ENV VENV_DIR=$HOME/.venv
+RUN python3 -m venv $VENV_DIR \
+    && . $VENV_DIR/bin/activate \
+    && pip install --upgrade pip \
+    && pip install pipenv
+
+COPY Pipfile* $HOME/
+RUN . $VENV_DIR/bin/activate \
+    && cd $HOME \
+    && if [ -f "Pipfile" ]; then pipenv install --deploy; fi \
+    && deactivate
 
 ###############################################################################
 # (6) Set permissions and ownership
