@@ -335,4 +335,4 @@ For more detailed information, visit the [official documentation](https://github
 
 ## License
 
-[MIT](LICENSE.md)
+[MIT](./LICENSE)
