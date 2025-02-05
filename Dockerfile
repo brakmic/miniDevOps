@@ -46,7 +46,7 @@ RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && \
 ###############################################################################
 # (3) Install Go
 ###############################################################################
-ARG GO_VERSION=1.21.1
+ARG GO_VERSION=1.23.6
 RUN curl -LO https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz \
     && tar -C /usr/local -xzf go${GO_VERSION}.linux-amd64.tar.gz \
     && rm go${GO_VERSION}.linux-amd64.tar.gz
@@ -69,7 +69,7 @@ RUN go install github.com/hidetatz/kubecolor/cmd/kubecolor@latest \
     && go install github.com/stern/stern@latest
 
 # 4c) Helm
-ARG HELM_VERSION=3.16.3
+ARG HELM_VERSION=3.17.0
 RUN curl -LO https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz \
     && tar -zxvf helm-v${HELM_VERSION}-linux-amd64.tar.gz \
     && mv linux-amd64/helm /usr/local/bin/helm \
@@ -78,7 +78,7 @@ RUN curl -LO https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz \
     && rm -rf linux-amd64 helm-v${HELM_VERSION}-linux-amd64.tar.gz
 
 # 4d) Terraform
-ARG TF_VERSION=1.10.3
+ARG TF_VERSION=1.10.5
 RUN curl -LO "https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip" \
     && unzip terraform_${TF_VERSION}_linux_amd64.zip \
     && mv terraform /usr/local/bin/terraform \
@@ -91,7 +91,7 @@ RUN curl -Lo /usr/local/bin/skaffold https://storage.googleapis.com/skaffold/rel
     && skaffold completion bash > ${COMPLETIONS}/skaffold
 
 # 4f) kubeseal
-ARG KUBESEAL_VERSION=0.27.3
+ARG KUBESEAL_VERSION=0.28.0
 RUN curl -LO "https://github.com/bitnami-labs/sealed-secrets/releases/download/v${KUBESEAL_VERSION}/kubeseal-${KUBESEAL_VERSION}-linux-amd64.tar.gz" \
     && tar -zxvf kubeseal-${KUBESEAL_VERSION}-linux-amd64.tar.gz \
     && mv kubeseal /usr/local/bin/kubeseal \
@@ -115,7 +115,7 @@ RUN cd /tmp && git clone https://github.com/ahmetb/kubectx.git \
     && rm -rf kubectx
 
 # 4i) kubelogin
-ARG KUBELOGIN_VERSION=0.1.6
+ARG KUBELOGIN_VERSION=0.1.7
 RUN curl -LO https://github.com/Azure/kubelogin/releases/download/v${KUBELOGIN_VERSION}/kubelogin-linux-amd64.zip \
     && unzip kubelogin-linux-amd64.zip -d kubelogin \
     && mv kubelogin/bin/linux_amd64/kubelogin /usr/local/bin \
@@ -127,7 +127,7 @@ RUN DIR=/usr/local/bin \
     curl -s https://raw.githubusercontent.com/jesseduffield/lazydocker/master/scripts/install_update_linux.sh | bash
 
 # 4k) usql
-ARG USQL_VERSION=0.19.14
+ARG USQL_VERSION=0.19.16
 RUN curl -LO https://github.com/xo/usql/releases/download/v${USQL_VERSION}/usql-${USQL_VERSION}-linux-amd64.tar.bz2 \
     && tar -xjf usql-${USQL_VERSION}-linux-amd64.tar.bz2 \
     && mv usql /usr/local/bin/usql \
@@ -135,7 +135,7 @@ RUN curl -LO https://github.com/xo/usql/releases/download/v${USQL_VERSION}/usql-
     && rm usql-${USQL_VERSION}-linux-amd64.tar.bz2
 
 # 4l) Operator SDK
-ARG OPERATOR_SDK_VERSION=1.38.0
+ARG OPERATOR_SDK_VERSION=1.39.1
 RUN set -eux; \
     ARCH=$(case $(uname -m) in \
       x86_64)  echo -n amd64 ;; \
