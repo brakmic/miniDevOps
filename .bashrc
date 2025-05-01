@@ -15,9 +15,9 @@ alias la='ls -A'
 alias ll='ls -alF'
 alias ls='ls --color=auto'
 alias kubectl="kubecolor"
-alias k="sudo kubecolor"
-alias tf="sudo terraform"
-alias h="sudo helm"
+alias k="kubecolor"
+alias tf="terraform"
+alias h="helm"
 
 # History settings
 export HISTTIMEFORMAT="%d/%m/%y %T "
