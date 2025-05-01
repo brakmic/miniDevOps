@@ -46,7 +46,7 @@ RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && \
 ###############################################################################
 # (3) Install Go
 ###############################################################################
-ARG GO_VERSION=1.23.6
+ARG GO_VERSION=1.24.2
 RUN curl -LO https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz \
     && tar -C /usr/local -xzf go${GO_VERSION}.linux-amd64.tar.gz \
     && rm go${GO_VERSION}.linux-amd64.tar.gz
@@ -69,7 +69,7 @@ RUN go install github.com/hidetatz/kubecolor/cmd/kubecolor@latest \
     && go install github.com/stern/stern@latest
 
 # 4c) Helm
-ARG HELM_VERSION=3.17.0
+ARG HELM_VERSION=3.17.3
 RUN curl -LO https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz \
     && tar -zxvf helm-v${HELM_VERSION}-linux-amd64.tar.gz \
     && mv linux-amd64/helm /usr/local/bin/helm \
@@ -78,7 +78,7 @@ RUN curl -LO https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz \
     && rm -rf linux-amd64 helm-v${HELM_VERSION}-linux-amd64.tar.gz
 
 # 4d) Terraform
-ARG TF_VERSION=1.10.5
+ARG TF_VERSION=1.11.4
 RUN curl -LO "https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip" \
     && unzip terraform_${TF_VERSION}_linux_amd64.zip \
     && mv terraform /usr/local/bin/terraform \
@@ -91,7 +91,7 @@ RUN curl -Lo /usr/local/bin/skaffold https://storage.googleapis.com/skaffold/rel
     && skaffold completion bash > ${COMPLETIONS}/skaffold
 
 # 4f) kubeseal
-ARG KUBESEAL_VERSION=0.28.0
+ARG KUBESEAL_VERSION=0.29.0
 RUN curl -LO "https://github.com/bitnami-labs/sealed-secrets/releases/download/v${KUBESEAL_VERSION}/kubeseal-${KUBESEAL_VERSION}-linux-amd64.tar.gz" \
     && tar -zxvf kubeseal-${KUBESEAL_VERSION}-linux-amd64.tar.gz \
     && mv kubeseal /usr/local/bin/kubeseal \
@@ -99,7 +99,7 @@ RUN curl -LO "https://github.com/bitnami-labs/sealed-secrets/releases/download/v
     && rm kubeseal-${KUBESEAL_VERSION}-linux-amd64.tar.gz
 
 # 4g) Kind
-ARG KIND_VERSION=0.26.0
+ARG KIND_VERSION=0.27.0
 RUN curl -Lo kind https://kind.sigs.k8s.io/dl/v${KIND_VERSION}/kind-linux-amd64 \
     && chmod +x kind \
     && mv kind /usr/local/bin/kind \
@@ -115,7 +115,7 @@ RUN cd /tmp && git clone https://github.com/ahmetb/kubectx.git \
     && rm -rf kubectx
 
 # 4i) kubelogin
-ARG KUBELOGIN_VERSION=0.1.7
+ARG KUBELOGIN_VERSION=0.2.8
 RUN curl -LO https://github.com/Azure/kubelogin/releases/download/v${KUBELOGIN_VERSION}/kubelogin-linux-amd64.zip \
     && unzip kubelogin-linux-amd64.zip -d kubelogin \
     && mv kubelogin/bin/linux_amd64/kubelogin /usr/local/bin \
@@ -127,7 +127,7 @@ RUN DIR=/usr/local/bin \
     curl -s https://raw.githubusercontent.com/jesseduffield/lazydocker/master/scripts/install_update_linux.sh | bash
 
 # 4k) usql
-ARG USQL_VERSION=0.19.16
+ARG USQL_VERSION=0.19.21
 RUN curl -LO https://github.com/xo/usql/releases/download/v${USQL_VERSION}/usql-${USQL_VERSION}-linux-amd64.tar.bz2 \
     && tar -xjf usql-${USQL_VERSION}-linux-amd64.tar.bz2 \
     && mv usql /usr/local/bin/usql \
@@ -135,11 +135,11 @@ RUN curl -LO https://github.com/xo/usql/releases/download/v${USQL_VERSION}/usql-
     && rm usql-${USQL_VERSION}-linux-amd64.tar.bz2
 
 # 4l) Operator SDK
-ARG OPERATOR_SDK_VERSION=1.39.1
+ARG OPERATOR_SDK_VERSION=1.39.2
 RUN set -eux; \
     ARCH=$(case $(uname -m) in \
-      x86_64)  echo -n amd64 ;; \
-      aarch64) echo -n arm64 ;; \
+        x86_64)  echo -n amd64 ;; \
+        aarch64) echo -n arm64 ;; \
       *)       echo -n $(uname -m) ;; \
     esac); \
     OS=$(uname | awk '{print tolower($0)}'); \
@@ -153,12 +153,17 @@ RUN curl -s https://fluxcd.io/install.sh | bash \
     && flux completion bash > ${COMPLETIONS}/flux
 
 # 4n) K9s
-ARG K9S_VERSION=0.32.7
+ARG K9S_VERSION=0.50.4
 RUN curl -Lo /tmp/k9s.tar.gz https://github.com/derailed/k9s/releases/download/v${K9S_VERSION}/k9s_Linux_amd64.tar.gz \
     && tar -C /tmp -xzf /tmp/k9s.tar.gz k9s \
     && mv /tmp/k9s /usr/local/bin/k9s \
     && chmod +x /usr/local/bin/k9s \
     && rm /tmp/k9s.tar.gz
+
+# 4o) Popeye - A Kubernetes cluster resource sanitizer
+ARG POPEYE_VERSION=0.22.1
+RUN go install github.com/derailed/popeye@v${POPEYE_VERSION} \
+    && popeye completion bash > ${COMPLETIONS}/popeye
 
 ###############################################################################
 #                           Stage 2: Runner
@@ -300,6 +305,11 @@ RUN . $VENV_DIR/bin/activate \
     && cd $HOME \
     && if [ -f "Pipfile" ]; then pipenv install --deploy; fi \
     && deactivate
+
+###############################################################################
+# Create tool configuration directories
+###############################################################################
+RUN mkdir -p $HOME/.config/popeye
 
 ###############################################################################
 # (6) Set permissions and ownership
