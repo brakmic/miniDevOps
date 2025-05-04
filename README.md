@@ -7,54 +7,86 @@
 ![Docker Pulls](https://badgen.net/docker/pulls/brakmic/devops?icon=docker)
 [![Docker Image Size](https://badgen.net/docker/size/brakmic/devops?icon=docker&label=image%20size)](https://hub.docker.com/r/brakmic/devops/)
 
+## Table of Contents
+
+- [miniDevOps: A DevOps Toolkit Operated within Docker](#minidevops-a-devops-toolkit-operated-within-docker)
+  - [Table of Contents](#table-of-contents)
+  - [Included DevOps Tools](#included-devops-tools)
+  - [Additional Packages](#additional-packages)
+  - [Python and Pipenv Development Environment](#python-and-pipenv-development-environment)
+  - [Setup](#setup)
+  - [For Windows Users](#for-windows-users)
+  - [Maintaining Persistent Kubernetes Clusters Across Docker Sessions](#maintaining-persistent-kubernetes-clusters-across-docker-sessions)
+  - [Docker Image](#docker-image)
+  - [HOWTOs](#howtos)
+  - [Useful Commands and Examples](#useful-commands-and-examples)
+    - [kubectl](#kubectl)
+    - [helm](#helm)
+    - [terraform](#terraform)
+    - [operator-sdk](#operator-sdk)
+    - [flux](#flux)
+    - [docker compose v2](#docker-compose-v2)
+    - [kind](#kind)
+    - [lazydocker](#lazydocker)
+    - [popeye](#popeye)
+    - [kubeseal](#kubeseal)
+    - [stern](#stern)
+    - [skaffold](#skaffold)
+    - [kubelogin](#kubelogin)
+    - [krew](#krew)
+    - [kubens](#kubens)
+    - [kubectx](#kubectx)
+    - [uSQL](#usql)
+  - [License](#license)
+
 ## Included DevOps Tools
 
-* [kubectl](https://github.com/kubernetes/kubectl) (aliased with [`kubecolor`](https://github.com/kubecolor/kubecolor))
-* [k9s](https://k9scli.io/)
-* [kube-shell](https://github.com/cloudnativelabs/kube-shell)
-* [helm](https://github.com/helm/helm)
-* [terraform](https://github.com/hashicorp/terraform)
-* [flux](https://fluxcd.io)
-* [operator-sdk](https://sdk.operatorframework.io/)
-* [kind](https://github.com/kubernetes-sigs/kind)
-* [docker compose v2](https://github.com/docker/compose)
-* [krew](https://github.com/kubernetes-sigs/krew) (kubectl's plugin manager)
-* [kubens](https://github.com/ahmetb/kubectx#kubens)
-* [kubectx](https://github.com/ahmetb/kubectx)
-* [stern](howtos/stern.md)
-* [skaffold](howtos/skaffold.md)
-* [kubeseal](howtos/kubeseal.md)
-* [kubelogin](https://github.com/Azure/kubelogin)
-* [lazydocker](https://github.com/jesseduffield/lazydocker)
-* [usql](https://github.com/xo/usql)
-* [popeye](https://popeyecli.io/)
+- [kubectl](https://github.com/kubernetes/kubectl) (aliased with [`kubecolor`](https://github.com/kubecolor/kubecolor))
+- [k9s](https://k9scli.io/)
+- [kube-shell](https://github.com/cloudnativelabs/kube-shell)
+- [helm](https://github.com/helm/helm)
+- [terraform](https://github.com/hashicorp/terraform)
+- [flux](https://fluxcd.io)
+- [operator-sdk](https://sdk.operatorframework.io/)
+- [kind](https://github.com/kubernetes-sigs/kind)
+- [docker compose v2](https://github.com/docker/compose)
+- [krew](https://github.com/kubernetes-sigs/krew) (kubectl's plugin manager)
+- [kubens](https://github.com/ahmetb/kubectx#kubens)
+- [kubectx](https://github.com/ahmetb/kubectx)
+- [stern](howtos/stern.md)
+- [skaffold](howtos/skaffold.md)
+- [kubeseal](howtos/kubeseal.md)
+- [kubelogin](https://github.com/Azure/kubelogin)
+- [lazydocker](https://github.com/jesseduffield/lazydocker)
+- [usql](https://github.com/xo/usql)
+- [popeye](https://popeyecli.io/)
 
 ## Additional Packages
 
-* bash (with completion functionality)
-* nano (featuring syntax highlighting)
-* vim
-* git
-* gcc
-* go
-* python3
-* pip3
-* make
-* zip
-* lynx
-* curl
-* wget
-* jq
-* ncurses
-* apache2-ssl, accompanied by apache2-utils
+- bash (with completion functionality)
+- nano (featuring syntax highlighting)
+- vim
+- git
+- gcc
+- go
+- python3
+- pip3
+- make
+- zip
+- lynx
+- curl
+- wget
+- jq
+- ncurses
+- apache2-ssl, accompanied by apache2-utils
 
 ## Python and Pipenv Development Environment
 
 `miniDevOps` includes Python and Pipenv, making it a convenient environment for Python development. Whether you're creating scripts to manage your infrastructure or developing full-fledged applications, this Docker image is equipped to handle your Python needs.
 
-* **Python**: The image includes Python 3, allowing you to run and develop Python applications.
+- **Python**: The image includes Python 3, allowing you to run and develop Python applications.
 
-* **Pipenv**: It automatically creates and manages a virtual environment for your projects, as well as adds/removes packages from your Pipfile as you install/uninstall packages. It also generates the Pipfile.lock, which is used to produce deterministic builds.
+- **Pipenv**: It automatically creates and manages a virtual environment for your projects, as well as adds/removes packages from your Pipfile as you install/uninstall packages. It also generates the Pipfile.lock, which is used to produce deterministic builds.
 
 Example usage:
 
@@ -70,7 +102,7 @@ The  [config.yml](./config.yml) file contains a suggested Kind cluster configura
 To run the `miniDevOps` Docker image, execute the following command:
 
 ```bash
-docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):/workspace --network=host --workdir /home/minidevops brakmic/devops:latest
+docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock -v $PWD:/workspace --network=host --workdir /home/minidevops brakmic/devops:latest
 ```
 
 The `/var/run/docker.sock` volume binding allows for communication with the host's Docker instance.
@@ -128,6 +160,8 @@ The following guides provide detailed instructions on how to use some of the inc
 2. **skaffold**: Understand the [automated workflow](./howtos/skaffold.md) for building, pushing, and deploying applications with Skaffold.
 
 3. **stern**: Get to know how to [stream logs](./howtos/stern.md) from multiple pods in real-time.
+
+4. **nginx-ingress**: Learn how to [install and configure](./howtos/nginx-ingress.md) the NGINX Ingress Controller v1.22.2 on your Kubernetes cluster.
 
 ## Useful Commands and Examples
 
@@ -332,17 +366,7 @@ Learn more from the [kubectx GitHub Repository](https://github.com/ahmetb/kubect
 
 ### uSQL
 
-uSQL is a modern query language and execution engine that facilitates data querying across different platforms and data sources. It provides a unified SQL interface for various databases and file formats.
-
-#### Features
-
-* **Unified Querying**: Write SQL queries that work across different databases and file formats.
-* **Optimization Engine**: Automatic optimization for complex queries to ensure efficient execution.
-* **Extensibility**: Easy to extend with custom functions and data sources.
-
-uSQL supports a wide range of databases and file formats including MySQL, PostgreSQL, SQLite, CSV, Excel, and more.
-
-#### Usage
+uSQL is a modern query language and execution engine that facilitates data querying across different platforms and data sources. It provides a unified SQL interface for various databases and file formats. uSQL supports a wide range of databases and file formats including MySQL, PostgreSQL, SQLite, CSV, Excel, and more.
 
 You can execute queries using the uSQL command-line interface:
 
