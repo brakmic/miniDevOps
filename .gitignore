@@ -3,4 +3,5 @@
 .kube
 .cache
 session/
+config.local
 

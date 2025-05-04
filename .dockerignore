@@ -7,4 +7,5 @@ projects/
 session/
 .cache/
 .DS_Store
+config.local
 
