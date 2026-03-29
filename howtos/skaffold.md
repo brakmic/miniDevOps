@@ -7,7 +7,7 @@
 Your Docker image already has Skaffold installed. If you're not already running the Docker container, launch it:
 
 ```bash
-docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock -v ${PWD}:/root/local --rm --network=host --workdir /root brakmic/devops:latest
+docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock -v ${PWD}:/home/minidevops/local --network=host --workdir /home/minidevops brakmic/devops:latest
 ```
 
 ## 2. Utilize Bash Completion

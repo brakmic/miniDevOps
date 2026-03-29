@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
 # Absolute paths to commands
 KIND_CMD="kind"

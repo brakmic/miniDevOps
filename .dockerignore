@@ -8,4 +8,10 @@ session/
 .cache/
 .DS_Store
 config.local
+gifs/
+images/
+howtos/
+LICENSE
+README.md
+*.md
 
