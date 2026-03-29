@@ -1,275 +1,204 @@
-# miniDevOps: A DevOps Toolkit Operated within Docker
+# miniDevOps
 
-`miniDevOps` is a Docker image designed to provide a comprehensive set of DevOps tools and utilities, all within a Debian Linux environment.
+A Docker image that bundles 20+ Kubernetes and infrastructure tools on Debian Linux. Pull it, start a container, and you have a working cluster in minutes.
 
 ![shell_welcome_msg](./gifs/miniDevOps.gif)
 
 ![Docker Pulls](https://badgen.net/docker/pulls/brakmic/devops?icon=docker)
 [![Docker Image Size](https://badgen.net/docker/size/brakmic/devops?icon=docker&label=image%20size)](https://hub.docker.com/r/brakmic/devops/)
 
-## Table of Contents
-
-- [miniDevOps: A DevOps Toolkit Operated within Docker](#minidevops-a-devops-toolkit-operated-within-docker)
-  - [Table of Contents](#table-of-contents)
-  - [Included DevOps Tools](#included-devops-tools)
-  - [Additional Packages](#additional-packages)
-  - [Python and Pipenv Development Environment](#python-and-pipenv-development-environment)
-  - [Setup](#setup)
-  - [For Windows Users](#for-windows-users)
-  - [Maintaining Persistent Kubernetes Clusters Across Docker Sessions](#maintaining-persistent-kubernetes-clusters-across-docker-sessions)
-  - [Docker Image](#docker-image)
-  - [HOWTOs](#howtos)
-  - [Useful Commands and Examples](#useful-commands-and-examples)
-    - [kubectl](#kubectl)
-    - [helm](#helm)
-    - [terraform](#terraform)
-    - [operator-sdk](#operator-sdk)
-    - [flux](#flux)
-    - [docker compose v2](#docker-compose-v2)
-    - [kind](#kind)
-    - [lazydocker](#lazydocker)
-    - [popeye](#popeye)
-    - [kubeseal](#kubeseal)
-    - [stern](#stern)
-    - [skaffold](#skaffold)
-    - [kubelogin](#kubelogin)
-    - [krew](#krew)
-    - [kubens](#kubens)
-    - [kubectx](#kubectx)
-    - [uSQL](#usql)
-  - [License](#license)
-
-## Included DevOps Tools
-
-- [kubectl](https://github.com/kubernetes/kubectl) (aliased with [`kubecolor`](https://github.com/kubecolor/kubecolor))
-- [k9s](https://k9scli.io/)
-- [kube-shell](https://github.com/cloudnativelabs/kube-shell)
-- [helm](https://github.com/helm/helm)
-- [terraform](https://github.com/hashicorp/terraform)
-- [flux](https://fluxcd.io)
-- [operator-sdk](https://sdk.operatorframework.io/)
-- [kind](https://github.com/kubernetes-sigs/kind)
-- [docker compose v2](https://github.com/docker/compose)
-- [krew](https://github.com/kubernetes-sigs/krew) (kubectl's plugin manager)
-- [kubens](https://github.com/ahmetb/kubectx#kubens)
-- [kubectx](https://github.com/ahmetb/kubectx)
-- [stern](howtos/stern.md)
-- [skaffold](howtos/skaffold.md)
-- [kubeseal](howtos/kubeseal.md)
-- [kubelogin](https://github.com/Azure/kubelogin)
-- [lazydocker](https://github.com/jesseduffield/lazydocker)
-- [usql](https://github.com/xo/usql)
-- [popeye](https://popeyecli.io/)
-
-## Additional Packages
-
-- bash (with completion functionality)
-- nano (featuring syntax highlighting)
-- vim
-- git
-- gcc
-- go
-- python3
-- pip3
-- make
-- zip
-- lynx
-- curl
-- wget
-- jq
-- ncurses
-- apache2-ssl, accompanied by apache2-utils
-
-## Python and Pipenv Development Environment
-
-`miniDevOps` includes Python and Pipenv, making it a convenient environment for Python development. Whether you're creating scripts to manage your infrastructure or developing full-fledged applications, this Docker image is equipped to handle your Python needs.
-
-- **Python**: The image includes Python 3, allowing you to run and develop Python applications.
-
-- **Pipenv**: It automatically creates and manages a virtual environment for your projects, as well as adds/removes packages from your Pipfile as you install/uninstall packages. It also generates the Pipfile.lock, which is used to produce deterministic builds.
-
-Example usage:
+## Quick Start
 
 ```bash
-pipenv install requests
-pipenv run python my_script.py
+docker pull brakmic/devops:latest
 ```
 
-## Setup
-
-The  [config.yml](./config.yml) file contains a suggested Kind cluster configuration. Feel free to modify it according to your specific needs.
-
-To run the `miniDevOps` Docker image, execute the following command:
+**Linux / macOS:**
 
 ```bash
-docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock -v $PWD:/workspace --network=host --workdir /home/minidevops brakmic/devops:latest
+docker run --rm -it \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v ${PWD}:/home/minidevops/local \
+  --network=host \
+  brakmic/devops:latest
 ```
 
-The `/var/run/docker.sock` volume binding allows for communication with the host's Docker instance.
+**Windows (PowerShell):**
 
-Once inside the container's shell, establish a new cluster using the command:
-
-```bash
-kind create cluster --name my-cluster
+```powershell
+docker run --rm -it `
+  -v //var/run/docker.sock:/var/run/docker.sock `
+  -v ${PWD}:/home/minidevops/local `
+  --network=host `
+  brakmic/devops:latest
 ```
 
-![mini_devops](./images/minidevops.png)
+### Windows: Cgroup v2 Requirement
 
-With this setup, you can now establish a new cluster and then copy the updated `.kube/config` into `/home/minidevops/local`. This directory will persist its content, even after a Docker shutdown.
+Kubernetes 1.35+ requires cgroup v2. Docker Desktop on Windows must use the WSL 2 backend with the unified cgroup hierarchy enabled. Without this, Kind clusters fail during kubelet startup with a health check timeout.
 
-Additionally, a shell script titled create_cluster.sh is available. This script sets up the cluster and deploys the NGINX IngressController.
+1. Enable the WSL 2 engine in Docker Desktop under Settings > General.
+2. Create or edit `%USERPROFILE%\.wslconfig`:
 
-Execute it with:
+```ini
+[wsl2]
+kernelCommandLine = cgroup_no_v1=all systemd.unified_cgroup_hierarchy=1
+```
+
+3. Restart WSL and Docker Desktop:
+
+```powershell
+wsl --shutdown
+```
+
+Verify the change by running `docker info --format '{{.CgroupVersion}}'`. The output should be `2`.
+
+Once inside the container, create a cluster:
 
 ```bash
 ./create_cluster.sh my-cluster
 ```
 
-![create_cluster_script](./images/setup_cluster.png)
+The socket mount lets the container talk to the host Docker daemon. The local volume mount at `/home/minidevops/local` persists files across container restarts. The cluster script creates a Kind cluster and deploys the NGINX Ingress Controller.
 
-## For Windows Users
+## Included Tools
 
-If you are running Docker on Windows, an alternative PowerShell script is available. This script provides a similar functionality as the bash script for setting up the cluster and deploying the NGINX IngressController. You can run this script in PowerShell with:
+| Tool | Version | Purpose |
+|------|---------|---------|
+| [kubectl](https://github.com/kubernetes/kubectl) | latest stable | Kubernetes CLI, aliased to [kubecolor](https://github.com/kubecolor/kubecolor) |
+| [helm](https://github.com/helm/helm) | 4.1.3 | Kubernetes package manager |
+| [terraform](https://github.com/hashicorp/terraform) | 1.14.8 | Infrastructure as code |
+| [kind](https://github.com/kubernetes-sigs/kind) | 0.31.0 | Local Kubernetes clusters in Docker |
+| [k9s](https://k9scli.io/) | 0.50.18 | Terminal UI for Kubernetes |
+| [stern](https://github.com/stern/stern) | 1.33.1 | Multi-pod log tailing |
+| [kubecolor](https://github.com/kubecolor/kubecolor) | 0.5.3 | Colorized kubectl output |
+| [skaffold](https://skaffold.dev/) | 2.18.2 | Continuous development for Kubernetes |
+| [flux](https://fluxcd.io) | 2.8.3 | GitOps toolkit |
+| [kubeseal](https://github.com/bitnami-labs/sealed-secrets) | 0.36.1 | Encrypt secrets for Git storage |
+| [operator-sdk](https://sdk.operatorframework.io/) | 1.42.2 | Build Kubernetes operators |
+| [kubelogin](https://github.com/Azure/kubelogin) | 0.2.16 | Azure AD authentication for clusters |
+| [lazydocker](https://github.com/jesseduffield/lazydocker) | 0.25.0 | Terminal UI for Docker |
+| [popeye](https://popeyecli.io/) | 0.22.1 | Cluster sanitizer and linter |
+| [krew](https://github.com/kubernetes-sigs/krew) | 0.5.0 | kubectl plugin manager |
+| [kubectx](https://github.com/ahmetb/kubectx) | 0.11.0 | Switch between clusters |
+| [kubens](https://github.com/ahmetb/kubectx) | 0.11.0 | Switch between namespaces |
+| [usql](https://github.com/xo/usql) | 0.21.4 | Universal SQL client |
+| [docker compose](https://github.com/docker/compose) | v2 | Multi-container orchestration |
 
-```powershell
-.\create_cluster.ps1 -CLUSTERNAME MyClusterName
-```
+## Additional Packages
 
-Please ensure that both kind and kubectl command-line tools are installed and available in your PATH when you run this PowerShell script.
+The image includes bash with completions, nano with syntax highlighting, vim, git, gcc, make, python3, pip3, pipenv, curl, htop, tree, openssl, iputils-ping, dnsutils, and hping3.
 
-## Maintaining Persistent Kubernetes Clusters Across Docker Sessions
+Python 3 and Pipenv are pre-configured with a virtual environment. Run `pipenv install <package>` to add dependencies and `pipenv run python my_script.py` to execute scripts.
 
-To retain your cluster between sessions, copy the current `.kube/config` to a local volume. Upon your next `miniDevOps` launch, replace the default `.kube/config` with the one you saved. Here's an example:
+## Setup
+
+The [config.yml](./config.yml) file contains a Kind cluster configuration you can adjust. The included `create_cluster.sh` script reads this config, creates the cluster, and deploys NGINX Ingress.
 
 ```bash
-docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock -v ${PWD}:/home/minidevops/local --network=host --workdir /home/minidevops brakmic/devops:latest
+./create_cluster.sh my-cluster
 ```
 
-This setup allows you to create a new cluster and then copy the updated `.kube/config` to `/home/minidevops/local`. The contents of this directory will be preserved, even after the Docker system is shut down.
+![mini_devops](./images/minidevops.png)
+
+On Windows, use the PowerShell equivalent:
+
+```powershell
+.\create_cluster.ps1 -ClusterName MyClusterName
+```
+
+![create_cluster_script](./images/setup_cluster.png)
+
+### Persisting Cluster State
+
+To keep your cluster across container restarts, copy `.kube/config` to the local volume before exiting:
+
+```bash
+cp ~/.kube/config ~/local/kubeconfig-backup
+```
+
+On the next run, restore it:
+
+```bash
+cp ~/local/kubeconfig-backup ~/.kube/config
+```
 
 ## Docker Image
 
-The Docker image for `miniDevOps` is available at: [Docker Hub](https://hub.docker.com/r/brakmic/devops)
+Available on [Docker Hub](https://hub.docker.com/r/brakmic/devops).
 
 ## HOWTOs
 
-The following guides provide detailed instructions on how to use some of the included DevOps tools in the `miniDevOps` Docker image:
+- [Sealing secrets with kubeseal](./howtos/kubeseal.md)
+- [Automated builds with Skaffold](./howtos/skaffold.md)
+- [Streaming logs with Stern](./howtos/stern.md)
+- [Installing NGINX Ingress Controller](./howtos/nginx-ingress.md)
 
-1. **kubeseal**: Learn how to [seal a secret](./howtos/kubeseal.md) in Kubernetes.
-
-2. **skaffold**: Understand the [automated workflow](./howtos/skaffold.md) for building, pushing, and deploying applications with Skaffold.
-
-3. **stern**: Get to know how to [stream logs](./howtos/stern.md) from multiple pods in real-time.
-
-4. **nginx-ingress**: Learn how to [install and configure](./howtos/nginx-ingress.md) the NGINX Ingress Controller v1.22.2 on your Kubernetes cluster.
-
-## Useful Commands and Examples
+## Command Reference
 
 ### kubectl
 
-Check the status of all the nodes within namespace `dev` in your Kubernetes cluster:
-
 ```bash
-kubectl get nodes -n dev
+kubectl get pods -n kube-system
 ```
 
-Learn more with the [Kubernetes Official Documentation](https://kubernetes.io/docs/tutorials/)
+[Kubernetes docs](https://kubernetes.io/docs/tutorials/)
 
 ### helm
 
-Install a package on your Kubernetes cluster. In this example, we are installing the stable release of Prometheus:
-
 ```bash
-helm install prometheus stable/prometheus
+helm install prometheus prometheus-community/prometheus
 ```
 
-Get started with the [Helm Official Documentation](https://helm.sh/docs/intro/using_helm/)
+[Helm docs](https://helm.sh/docs/intro/using_helm/)
 
 ### terraform
 
-Initialize a new Terraform working directory and apply the configurations:
-
 ```bash
-terraform init
-terraform apply
+terraform init && terraform apply
 ```
 
-Explore more with the [Terraform Learn](https://learn.hashicorp.com/terraform)
+[Terraform docs](https://learn.hashicorp.com/terraform)
 
 ### operator-sdk
 
-[Operator SDK](https://sdk.operatorframework.io/) is a toolkit to accelerate building Kubernetes native applications. With the Operator SDK, developers can build, test, and deploy Operators - applications that can manage and automate complex systems within a Kubernetes cluster. The SDK provides high-level APIs, useful abstractions, and project scaffolding that facilitates the fast development of Operators, without requiring deep Kubernetes API knowledge. The Operator SDK supports various operator types including Helm, Ansible, and Go, allowing developers to choose the best tool for their use case.
-
-Example usage:
-
 ```bash
-# Create a new operator project
-operator-sdk init --domain=example.com --repo=github.com/example-inc/memcached-operator
-
-# Create a new API for the custom resource
+operator-sdk init --domain=example.com --repo=github.com/example-inc/my-operator
 operator-sdk create api --group cache --version v1alpha1 --kind Memcached --resource --controller
-
-# Build and push the operator image
-make docker-build docker-push IMG=<some-registry>/memcached-operator:v0.0.1
-
-# Deploy the operator to a cluster
-make install
-make deploy IMG=<some-registry>/memcached-operator:v0.0.1
 ```
 
-This sets up the basic scaffolding for your operator project, creates the necessary CRDs (Custom Resource Definitions), and allows you to push your operator to a container registry and deploy it to a Kubernetes cluster. From here, you can define your operator's logic and specify how it should manage the application's lifecycle.
+[Operator SDK docs](https://sdk.operatorframework.io/)
 
 ### flux
 
-[Flux](https://fluxcd.io) is a toolset for keeping Kubernetes clusters in sync with infrastructure-as-code systems, like Git repositories, and automating updates to configuration and images. It uses a pull-based approach to continuously deploy and monitor applications. With Flux, you can ensure that your cluster's state matches the versioned sources, allowing for GitOps practices in your workflow.
-
-Flux supports multi-tenancy and scales to multiple clusters, ensuring declarative infrastructure for both small-scale applications and large-scale operations. It comes with powerful features like automatic updates, policy-driven deployments, and integrations with prominent Kubernetes-native tools.
-
-Example usage:
-
 ```bash
-# Bootstrap Flux on your cluster
 flux bootstrap github \
   --owner=<your-user> \
-  --repository=<your-repository> \
+  --repository=<your-repo> \
   --branch=main \
-  --path=./clusters/your-cluster \
+  --path=./clusters/my-cluster \
   --personal
-
-# Check components status
-flux check
-
-# Sync your cluster state with the Git repository
-flux reconcile source git flux-system
 ```
 
-With these commands, you've set up Flux to manage your Kubernetes cluster according to the infrastructure-as-code definitions in your Git repository. Flux will now automatically ensure that your cluster's state matches the configurations in the Git repository, and any change to the repository will be promptly applied to the cluster.
+[Flux docs](https://fluxcd.io/docs/)
 
-Dive deeper with the [Flux Official Documentation](https://fluxcd.io/docs/introduction/).
-
-### docker compose v2
-
-Start all services defined in a `docker-compose.yml` file in detached mode:
+### docker compose
 
 ```bash
 docker compose up -d
 ```
 
-Read more in the [Docker Compose Documentation](https://docs.docker.com/compose/migrate/)
+[Compose docs](https://docs.docker.com/compose/)
 
 ### kind
-
-Create a Kubernetes cluster with a specific name:
 
 ```bash
 kind create cluster --name my-cluster
 ```
 
-Learn how to get started with the [kind GitHub Quick Start Guide](https://kind.sigs.k8s.io/docs/user/quick-start/)
+[kind docs](https://kind.sigs.k8s.io/docs/user/quick-start/)
 
 ### lazydocker
-
-A simple terminal UI for both docker and docker-compose, to quickly manage projects with containers:
 
 ![lazydocker](./gifs/lazydocker.gif)
 
@@ -277,104 +206,72 @@ A simple terminal UI for both docker and docker-compose, to quickly manage proje
 lazydocker
 ```
 
-Check out the [lazydocker GitHub Repository](https://github.com/jesseduffield/lazydocker) for more information.
+[lazydocker repo](https://github.com/jesseduffield/lazydocker)
 
 ### popeye
 
-[Popeye](https://popeyecli.io/) is a utility that scans your Kubernetes clusters for potential issues and misconfigurations. It helps identify resource issues, validates configurations against best practices, and suggests improvements to enhance your cluster's security, efficiency, and reliability. Popeye can detect issues like unused resources, security vulnerabilities, and configuration problems before they cause production issues.
-
 ```bash
-# Scan your Kubernetes cluster and report issues
-popeye
-
-# Scan with a specific output format (yaml, json, html, junit, etc.)
-popeye -o yaml
-
-# Scan a specific namespace
-popeye -n kube-system
+popeye -n kube-system -o yaml
 ```
 
-### kubeseal
+[Popeye docs](https://popeyecli.io/)
 
-Seal a Kubernetes secret using a public certificate:
+### kubeseal
 
 ```bash
 kubeseal --cert=publicCert.pem --format=yaml < secret.yaml > sealedsecret.yaml
 ```
 
-Read the [kubeseal GitHub Usage Guide](https://github.com/bitnami-labs/sealed-secrets#usage) to learn more.
+[kubeseal docs](https://github.com/bitnami-labs/sealed-secrets#usage)
 
 ### stern
-
-Stream logs from multiple pods in real-time. For example, to stream logs from all pods with the label `app=myapp` in the `dev` namespace:
 
 ```bash
 stern -n dev app=myapp
 ```
 
-Learn more about Stern with its [GitHub Repository](https://github.com/stern/stern#usage)
+[stern repo](https://github.com/stern/stern#usage)
 
 ### skaffold
-
-Automate the workflow for building, pushing, and deploying applications in a Kubernetes environment. Here's how to start a development cycle on your local cluster:
 
 ```bash
 skaffold dev
 ```
 
-Get started with [Skaffold Documentation](https://skaffold.dev/docs/)
+[Skaffold docs](https://skaffold.dev/docs/)
 
 ### kubelogin
-
-Authenticate to a Kubernetes cluster using an OpenID Connect identity provider. For example:
 
 ```bash
 kubelogin convert-kubeconfig -l azure
 ```
 
-Learn more from [kubelogin GitHub Repository](https://github.com/Azure/kubelogin)
+[kubelogin repo](https://github.com/Azure/kubelogin)
 
 ### krew
 
-Krew is a plugin manager for `kubectl`. Use it to install and manage kubectl plugins. For example, to list all available plugins:
-
 ```bash
-kubectl krew search
+kubectl krew install ctx
 ```
 
-Explore [krew GitHub Repository](https://github.com/kubernetes-sigs/krew) to learn more.
+[krew repo](https://github.com/kubernetes-sigs/krew)
 
-### kubens
-
-Switch between Kubernetes namespaces smoothly. For example, to switch to the `dev` namespace:
-
-```bash
-kubens dev
-```
-
-Check out [kubens GitHub Repository](https://github.com/ahmetb/kubectx#kubens) for more information.
-
-### kubectx
-
-Switch between Kubernetes contexts (clusters). For example, to switch to a context named `my-cluster`:
+### kubectx / kubens
 
 ```bash
 kubectx my-cluster
+kubens dev
 ```
 
-Learn more from the [kubectx GitHub Repository](https://github.com/ahmetb/kubectx)
+[kubectx repo](https://github.com/ahmetb/kubectx)
 
-### uSQL
+### usql
 
-uSQL is a modern query language and execution engine that facilitates data querying across different platforms and data sources. It provides a unified SQL interface for various databases and file formats. uSQL supports a wide range of databases and file formats including MySQL, PostgreSQL, SQLite, CSV, Excel, and more.
-
-You can execute queries using the uSQL command-line interface:
-
-```sql
-usql "SELECT * FROM file.csv WHERE column > 10"
+```bash
+usql postgres://user:pass@localhost/mydb -c "SELECT count(*) FROM orders"
 ```
 
-For more detailed information, visit the [official documentation](https://github.com/xo/usql#features-and-compatibility).
+[usql repo](https://github.com/xo/usql)
 
 ## License
 

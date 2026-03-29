@@ -4,4 +4,5 @@
 .cache
 session/
 config.local
+.vscode/
 

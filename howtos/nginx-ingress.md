@@ -1,6 +1,6 @@
-# Installing NGINX Ingress Controller v1.22.2
+# Installing NGINX Ingress Controller v1.15.1
 
-This guide explains how to install the open-source NGINX Ingress Controller version 1.22.2 on a Kubernetes cluster.
+This guide explains how to install the open-source NGINX Ingress Controller version 1.15.1 on a Kubernetes cluster.
 
 ## Prerequisites
 
@@ -21,13 +21,13 @@ kubectl create namespace ingress-nginx
 For most Kubernetes environments (cloud providers):
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.12.2/deploy/static/provider/cloud/deploy.yaml
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.15.1/deploy/static/provider/cloud/deploy.yaml
 ```
 
 For bare-metal environments:
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.12.2/deploy/static/provider/baremetal/deploy.yaml
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.15.1/deploy/static/provider/baremetal/deploy.yaml
 ```
 
 ### Step 3: Verify the installation

@@ -1,4 +1,5 @@
 export PATH=$HOME/.krew/bin:$PATH
+export PIPENV_IGNORE_VIRTUALENVS=1
 
 # Enable bash completion if available
 if [ -f /etc/bash_completion ]; then
