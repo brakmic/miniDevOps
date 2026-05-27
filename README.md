@@ -66,18 +66,18 @@ The socket mount lets the container talk to the host Docker daemon. The local vo
 | Tool | Version | Purpose |
 |------|---------|---------|
 | [kubectl](https://github.com/kubernetes/kubectl) | latest stable | Kubernetes CLI, aliased to [kubecolor](https://github.com/kubecolor/kubecolor) |
-| [helm](https://github.com/helm/helm) | 4.1.3 | Kubernetes package manager |
-| [terraform](https://github.com/hashicorp/terraform) | 1.14.8 | Infrastructure as code |
+| [helm](https://github.com/helm/helm) | 4.2.0 | Kubernetes package manager |
+| [terraform](https://github.com/hashicorp/terraform) | 1.15.0 | Infrastructure as code |
 | [kind](https://github.com/kubernetes-sigs/kind) | 0.31.0 | Local Kubernetes clusters in Docker |
 | [k9s](https://k9scli.io/) | 0.50.18 | Terminal UI for Kubernetes |
-| [stern](https://github.com/stern/stern) | 1.33.1 | Multi-pod log tailing |
-| [kubecolor](https://github.com/kubecolor/kubecolor) | 0.5.3 | Colorized kubectl output |
-| [skaffold](https://skaffold.dev/) | 2.18.2 | Continuous development for Kubernetes |
+| [stern](https://github.com/stern/stern) | 1.34.0 | Multi-pod log tailing |
+| [kubecolor](https://github.com/kubecolor/kubecolor) | 0.6.0 | Colorized kubectl output |
+| [skaffold](https://skaffold.dev/) | 2.21.0 | Continuous development for Kubernetes |
 | [flux](https://fluxcd.io) | 2.8.3 | GitOps toolkit |
-| [kubeseal](https://github.com/bitnami-labs/sealed-secrets) | 0.36.1 | Encrypt secrets for Git storage |
+| [kubeseal](https://github.com/bitnami-labs/sealed-secrets) | 0.37.0 | Encrypt secrets for Git storage |
 | [operator-sdk](https://sdk.operatorframework.io/) | 1.42.2 | Build Kubernetes operators |
-| [kubelogin](https://github.com/Azure/kubelogin) | 0.2.16 | Azure AD authentication for clusters |
-| [lazydocker](https://github.com/jesseduffield/lazydocker) | 0.25.0 | Terminal UI for Docker |
+| [kubelogin](https://github.com/Azure/kubelogin) | 0.2.17 | Azure AD authentication for clusters |
+| [lazydocker](https://github.com/jesseduffield/lazydocker) | 0.25.2 | Terminal UI for Docker |
 | [popeye](https://popeyecli.io/) | 0.22.1 | Cluster sanitizer and linter |
 | [krew](https://github.com/kubernetes-sigs/krew) | 0.5.0 | kubectl plugin manager |
 | [kubectx](https://github.com/ahmetb/kubectx) | 0.11.0 | Switch between clusters |
