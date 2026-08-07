@@ -202,7 +202,7 @@ phase_kind() {
     fi
 
     # Wait for demo pod
-    if kubectl wait --for=condition=ready pod -l app=nginx --timeout=60s >/dev/null 2>&1; then
+    if kubectl wait --for=condition=ready pod -l app=myapp --timeout=120s >/dev/null 2>&1; then
         log_pass "demo app pod ready"
     else
         log_fail "demo app pod ready (timeout)"
@@ -232,7 +232,7 @@ phase_kind() {
 
     # popeye: scan cluster
     echo "Running popeye scan..."
-    if popeye -o yaml --all-namespaces --out /tmp/popeye.yaml >/dev/null 2>&1; then
+    if popeye -o yaml --output-file /tmp/popeye.yaml >/dev/null 2>&1; then
         log_pass "popeye scan"
     else
         log_fail "popeye scan"
@@ -241,7 +241,7 @@ phase_kind() {
 
     # stern: capture one log line from a running pod
     echo "Testing stern..."
-    if timeout 10 stern --tail=1 "app=nginx" --namespace default 2>/dev/null | head -1 > /tmp/stern.log; then
+    if timeout 10 stern --tail=1 "app=myapp" --namespace default 2>/dev/null | head -1 > /tmp/stern.log; then
         log_pass "stern log capture"
     else
         log_skip "stern log capture" "no matching pods or timeout"
@@ -310,7 +310,7 @@ phase_live() {
     kubens >/dev/null 2>&1 && log_pass "kubens namespace list" || log_fail "kubens namespace list"
 
     # popeye (read-only scan)
-    if popeye -o yaml --all-namespaces --out /tmp/popeye-live.yaml >/dev/null 2>&1; then
+    if popeye -o yaml --output-file /tmp/popeye-live.yaml >/dev/null 2>&1; then
         log_pass "popeye live scan"
     else
         log_fail "popeye live scan"
