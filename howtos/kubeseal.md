@@ -9,7 +9,7 @@ Here's a detailed step-by-step guide on how to use SealedSecrets:
 Install the SealedSecrets controller into your cluster with the `kustomize` tool:
 
 ```bash
-kubectl apply -f https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.36.1/controller.yaml
+kubectl apply -f https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.38.4/controller.yaml
 ```
 
 ## 2. Create a Secret

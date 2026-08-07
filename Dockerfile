@@ -6,22 +6,23 @@ FROM debian:bookworm-slim AS builder
 ###############################################################################
 # Version ARGs
 ###############################################################################
-ARG FLUX_VERSION=2.8.3
-ARG GO_VERSION=1.26.3
-ARG HELM_VERSION=4.2.0
-ARG K9S_VERSION=0.50.18
-ARG KIND_VERSION=0.31.0
+ARG KUBECTL_VERSION=1.32.3
+ARG FLUX_VERSION=2.9.3
+ARG GO_VERSION=1.26.5
+ARG HELM_VERSION=4.2.3
+ARG K9S_VERSION=0.51.0
+ARG KIND_VERSION=0.32.0
 ARG KREW_VERSION=0.5.0
 ARG KUBECOLOR_VERSION=0.6.0
 ARG KUBECTX_VERSION=0.11.0
-ARG KUBELOGIN_VERSION=0.2.17
-ARG KUBESEAL_VERSION=0.37.0
+ARG KUBELOGIN_VERSION=0.2.19
+ARG KUBESEAL_VERSION=0.38.4
 ARG LAZYDOCKER_VERSION=0.25.2
-ARG OPERATOR_SDK_VERSION=1.42.2
+ARG OPERATOR_SDK_VERSION=1.42.3
 ARG POPEYE_VERSION=0.22.1
-ARG SKAFFOLD_VERSION=2.21.0
+ARG SKAFFOLD_VERSION=2.24.0
 ARG STERN_VERSION=1.34.0
-ARG TF_VERSION=1.15.0
+ARG TF_VERSION=1.15.8
 ARG USQL_VERSION=0.21.4
 
 ###############################################################################
@@ -76,10 +77,13 @@ ENV PATH=/usr/local/go/bin:${PATH}
 # (4) Tools
 ###############################################################################
 
-# kubectl tracks the latest stable release.
-RUN curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl" \
+# kubectl
+RUN curl -LO "https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl" \
+    && curl -LO "https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl.sha256" \
+    && echo "$(cat kubectl.sha256)  kubectl" | sha256sum -c - \
     && chmod +x kubectl \
     && mv kubectl /usr/local/bin/kubectl \
+    && rm kubectl.sha256 \
     && mkdir -p ${COMPLETIONS} \
     && kubectl completion bash > ${COMPLETIONS}/kubectl
 

@@ -16,7 +16,7 @@ This guide explains how to install the open-source NGINX Ingress Controller vers
 kubectl create namespace ingress-nginx
 ```
 
-### Step 2: Install NGINX Ingress Controller v1.22.2
+### Step 2: Install NGINX Ingress Controller v1.15.1
 
 For most Kubernetes environments (cloud providers):
 

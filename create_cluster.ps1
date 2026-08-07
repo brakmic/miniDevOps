@@ -50,7 +50,7 @@ Write-Host " --- "
 
 # Deploy NGINX Ingress Controller
 Write-Host " --- Deploying NGINX IngressController ---"
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.15.1/deploy/static/provider/kind/deploy.yaml
 Write-Host "NGINX Ingress Controller deployment initiated."
 
 Write-Host " --- Waiting for deployment to complete ---"

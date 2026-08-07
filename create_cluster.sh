@@ -74,7 +74,7 @@ echo "Kind cluster '${CLUSTERNAME}' created successfully."
 echo " --- "
 
 # Deploy NGINX Ingress Controller
-INGRESS_DEPLOY_URL="https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml"
+INGRESS_DEPLOY_URL="https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.15.1/deploy/static/provider/kind/deploy.yaml"
 sudo "${KUBECTL_CMD}" apply -f "${INGRESS_DEPLOY_URL}"
 echo "NGINX Ingress Controller deployment initiated."
 echo " --- "
