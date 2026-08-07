@@ -230,9 +230,13 @@ phase_kind() {
         log_skip "kubeseal" "sealed-secrets controller not found on Kind cluster"
     fi
 
-    # popeye: scan cluster
+    # popeye: scan cluster (may exit non-zero based on cluster health score, check output instead)
     echo "Running popeye scan..."
-    if popeye -o yaml --output-file /tmp/popeye.yaml >/dev/null 2>&1; then
+    local popeye_kind_out
+    set +e
+    popeye_kind_out=$(popeye -o yaml --output-file /tmp/popeye.yaml 2>&1)
+    set -e
+    if echo "${popeye_kind_out}" | grep -q "popeye:"; then
         log_pass "popeye scan"
     else
         log_fail "popeye scan"
@@ -309,8 +313,12 @@ phase_live() {
     # kubens
     kubens >/dev/null 2>&1 && log_pass "kubens namespace list" || log_fail "kubens namespace list"
 
-    # popeye (read-only scan)
-    if popeye -o yaml --output-file /tmp/popeye-live.yaml >/dev/null 2>&1; then
+    # popeye (read-only scan, may exit non-zero based on cluster health, check output)
+    local popeye_live_out
+    set +e
+    popeye_live_out=$(popeye -o yaml --output-file /tmp/popeye-live.yaml 2>&1)
+    set -e
+    if echo "${popeye_live_out}" | grep -q "popeye:"; then
         log_pass "popeye live scan"
     else
         log_fail "popeye live scan"
