@@ -234,14 +234,13 @@ phase_kind() {
     echo "Running popeye scan..."
     local popeye_kind_out
     set +e
-    popeye_kind_out=$(popeye -o yaml --output-file /tmp/popeye.yaml 2>&1)
+    popeye_kind_out=$(popeye -o yaml 2>&1)
     set -e
     if echo "${popeye_kind_out}" | grep -q "popeye:"; then
         log_pass "popeye scan"
     else
         log_fail "popeye scan"
     fi
-    rm -f /tmp/popeye.yaml
 
     # stern: capture one log line from a running pod
     echo "Testing stern..."
@@ -316,14 +315,13 @@ phase_live() {
     # popeye (read-only scan, may exit non-zero based on cluster health, check output)
     local popeye_live_out
     set +e
-    popeye_live_out=$(popeye -o yaml --output-file /tmp/popeye-live.yaml 2>&1)
+    popeye_live_out=$(popeye -o yaml 2>&1)
     set -e
     if echo "${popeye_live_out}" | grep -q "popeye:"; then
         log_pass "popeye live scan"
     else
         log_fail "popeye live scan"
     fi
-    rm -f /tmp/popeye-live.yaml
 
     # flux check with version awareness
     local k8s_ver
