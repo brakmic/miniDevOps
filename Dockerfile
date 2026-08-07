@@ -24,6 +24,7 @@ ARG SKAFFOLD_VERSION=2.24.0
 ARG STERN_VERSION=1.34.0
 ARG TF_VERSION=1.15.8
 ARG USQL_VERSION=0.21.4
+ARG YQ_VERSION=4.53.3
 
 ###############################################################################
 # Build environment
@@ -213,6 +214,12 @@ RUN mkdir -p /tmp/krew \
     && cd / \
     && rm -rf /tmp/krew
 
+# yq (YAML processor, mikefarah/yq)
+ARG YQ_VERSION
+RUN curl -Lo /usr/local/bin/yq \
+        "https://github.com/mikefarah/yq/releases/download/v${YQ_VERSION}/yq_linux_amd64" \
+    && chmod +x /usr/local/bin/yq
+
 ###############################################################################
 # (5) Verify all tool binaries exist
 ###############################################################################
@@ -230,6 +237,7 @@ RUN kubectl version --client \
     && lazydocker --version \
     && popeye version \
     && usql --version \
+    && yq --version \
     && kubectx --help > /dev/null \
     && kubens --help > /dev/null \
     && kubectl-krew version
@@ -247,6 +255,7 @@ LABEL org.opencontainers.image.source="https://github.com/brakmic/miniDevOps" \
 # Environment
 ###############################################################################
 ARG USER=minidevops
+ARG BATS_VERSION=1.14.0
 ENV RUNNER_HOME=/home/${USER}
 ENV HOME=${RUNNER_HOME}
 ENV PIPENV_VERBOSITY=-1
@@ -283,8 +292,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     nano \
     vim \
     htop \
+    age \
     curl \
+    gettext-base \
     gnupg \
+    jq \
     dpkg \
     lsb-release \
     iputils-ping \
@@ -361,6 +373,15 @@ RUN . $VENV_DIR/bin/activate \
 ###############################################################################
 RUN mkdir -p $HOME/.config/popeye \
     && mkdir -p $HOME/.krew
+
+###############################################################################
+# (5.5) Install BATS-core test framework
+###############################################################################
+ARG BATS_VERSION
+RUN git clone --depth 1 --branch v${BATS_VERSION} \
+        https://github.com/bats-core/bats-core.git /tmp/bats-core \
+    && /tmp/bats-core/install.sh /usr/local \
+    && rm -rf /tmp/bats-core
 
 ###############################################################################
 # (6) Set permissions and ownership
