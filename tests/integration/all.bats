@@ -13,6 +13,50 @@ setup_file() {
     echo "Creating Kind cluster '${KIND_CLUSTER_NAME}'..."
     kind create cluster --name "${KIND_CLUSTER_NAME}" --wait 5m
     kubectl wait --for=condition=Ready nodes --all --timeout=120s
+
+    # Install Gitea and bootstrap Flux for GitOps tests
+    echo "Installing Gitea..."
+    helm repo add gitea https://dl.gitea.com/charts/ 2>/dev/null || true
+    helm repo update 2>/dev/null || true
+    helm install gitea gitea/gitea \
+        --namespace gitea --create-namespace \
+        --set gitea.admin.username=fluxuser \
+        --set gitea.admin.password=fluxpass \
+        --set service.http.type=ClusterIP \
+        --set persistence.enabled=false \
+        --set postgresql.enabled=false \
+        --set memcached.enabled=false \
+        --wait --timeout 120s 2>/dev/null
+
+    # Wait for Gitea API to be ready
+    echo "Waiting for Gitea API..."
+    local waited=0
+    while ! kubectl exec -n gitea deploy/gitea -- curl -sf http://localhost:3000/api/v1/version >/dev/null 2>&1; do
+        sleep 2
+        waited=$((waited + 2))
+        [ ${waited} -lt 60 ] || break
+    done
+
+    # Create repo via Gitea API
+    kubectl exec -n gitea deploy/gitea -- \
+        curl -sf -X POST http://localhost:3000/api/v1/admin/users/fluxuser/repos \
+        -H "Content-Type: application/json" \
+        -u fluxuser:fluxpass \
+        -d '{"name":"flux-test","private":false}' \
+        >/dev/null 2>&1 || true
+
+    # Bootstrap Flux against Gitea
+    echo "Bootstrapping Flux..."
+    flux bootstrap git \
+        --url=http://gitea-http.gitea:3000/fluxuser/flux-test \
+        --username=fluxuser \
+        --password=fluxpass \
+        --path=./clusters/test \
+        --components-extra=image-reflector-controller,image-automation-controller \
+        --silent 2>/dev/null || true
+
+    # Wait for Flux controllers to be ready
+    kubectl wait --for=condition=ready pod -l app.kubernetes.io/part-of=flux -n flux-system --timeout=180s 2>/dev/null || true
 }
 
 teardown_file() {
@@ -99,4 +143,21 @@ teardown_file() {
 @test "flux check passes on Kind cluster" {
     run flux check --pre
     assert_success
+}
+
+# --- Gitea + Flux GitOps ---
+
+@test "Gitea is reachable via API" {
+    run kubectl exec -n gitea deploy/gitea -- curl -sf http://localhost:3000/api/v1/version
+    assert_success
+}
+
+@test "Flux controllers report healthy" {
+    run flux check
+    assert_success
+}
+
+@test "GitRepository reconciles from Gitea" {
+    run bash -c "flux get sources git -n flux-system 2>/dev/null | grep -c 'True' || echo 0"
+    assert [ "${output}" -ge 1 ]
 }
