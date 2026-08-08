@@ -14,11 +14,10 @@ setup_file() {
     kind create cluster --name "${KIND_CLUSTER_NAME}" --wait 5m
     kubectl wait --for=condition=Ready nodes --all --timeout=120s
 
-    # Install Gitea and bootstrap Flux for GitOps tests
+    # Install Gitea with sqlite3. Init container creates admin user before server starts.
     echo "Installing Gitea..."
     kubectl create namespace gitea 2>/dev/null || true
 
-    # Minimal Gitea with sqlite3, using API install (no INSTALL_LOCK)
     kubectl apply -n gitea -f - <<'GITEA_EOF'
 apiVersion: v1
 kind: Service
@@ -45,6 +44,27 @@ spec:
       labels:
         app: gitea
     spec:
+      initContainers:
+      - name: gitea-init
+        image: gitea/gitea:1.25
+        command:
+        - sh
+        - -c
+        - |
+          gitea admin user create --admin \
+            --username fluxuser --password fluxpass \
+            --email fluxuser@test.local --must-change-password=false
+        env:
+        - name: GITEA__database__DB_TYPE
+          value: sqlite3
+        - name: GITEA__security__INSTALL_LOCK
+          value: "true"
+        - name: GITEA__server__DOMAIN
+          value: gitea-http.gitea.svc.cluster.local
+        - name: GITEA__server__ROOT_URL
+          value: http://gitea-http.gitea.svc.cluster.local:3000
+        - name: GITEA__server__HTTP_PORT
+          value: "3000"
       containers:
       - name: gitea
         image: gitea/gitea:1.25
@@ -53,6 +73,8 @@ spec:
         env:
         - name: GITEA__database__DB_TYPE
           value: sqlite3
+        - name: GITEA__security__INSTALL_LOCK
+          value: "true"
         - name: GITEA__server__DOMAIN
           value: gitea-http.gitea.svc.cluster.local
         - name: GITEA__server__ROOT_URL
@@ -61,23 +83,13 @@ spec:
           value: "3000"
         readinessProbe:
           httpGet:
-            path: /
+            path: /api/v1/version
             port: 3000
           initialDelaySeconds: 10
           periodSeconds: 5
 GITEA_EOF
 
     kubectl -n gitea wait --for=condition=ready pod -l app=gitea --timeout=120s 2>/dev/null || true
-    sleep 5
-
-    # Complete Gitea web install, creating admin user
-    echo "Configuring Gitea admin user..."
-    kubectl run gitea-setup --rm --attach --restart=Never --image=curlimages/curl:latest -n gitea -- \
-        curl -sf -X POST http://gitea-http:3000/ \
-        -H "Content-Type: application/x-www-form-urlencoded" \
-        -d "db_type=sqlite3&app_name=Gitea&admin_name=fluxuser&admin_passwd=fluxpass&admin_confirm_passwd=fluxpass&admin_email=fluxuser@test.local" \
-        >/dev/null 2>&1 || true
-
     sleep 3
 
     # Create test repo via API
