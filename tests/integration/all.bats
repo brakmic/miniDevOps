@@ -18,17 +18,8 @@ setup_file() {
     echo "Installing Gitea..."
     kubectl create namespace gitea 2>/dev/null || true
 
-    # Minimal Gitea with sqlite3 — no postgres, no redis/valkey
+    # Minimal Gitea with sqlite3, using API install (no INSTALL_LOCK)
     kubectl apply -n gitea -f - <<'GITEA_EOF'
-apiVersion: v1
-kind: Secret
-metadata:
-  name: gitea-admin
-type: Opaque
-stringData:
-  username: fluxuser
-  password: fluxpass
----
 apiVersion: v1
 kind: Service
 metadata:
@@ -68,29 +59,31 @@ spec:
           value: http://gitea-http.gitea.svc.cluster.local:3000
         - name: GITEA__server__HTTP_PORT
           value: "3000"
-        - name: GITEA__security__INSTALL_LOCK
-          value: "true"
         readinessProbe:
           httpGet:
-            path: /api/v1/version
+            path: /
             port: 3000
           initialDelaySeconds: 10
           periodSeconds: 5
 GITEA_EOF
 
     kubectl -n gitea wait --for=condition=ready pod -l app=gitea --timeout=120s 2>/dev/null || true
+    sleep 5
 
-    # Create admin user via Gitea CLI
-    kubectl exec -n gitea deploy/gitea -- \
-        gitea admin user create \
-        --username fluxuser --password fluxpass \
-        --email fluxuser@test.local --admin \
-        2>/dev/null || true
+    # Complete Gitea web install, creating admin user
+    echo "Configuring Gitea admin user..."
+    kubectl run gitea-setup --rm -i --restart=Never --image=curlimages/curl:latest -n gitea -- \
+        curl -sf -X POST http://gitea-http:3000/ \
+        -H "Content-Type: application/x-www-form-urlencoded" \
+        -d "db_type=sqlite3&app_name=Gitea&admin_name=fluxuser&admin_passwd=fluxpass&admin_confirm_passwd=fluxpass&admin_email=fluxuser@test.local" \
+        >/dev/null 2>&1 || true
 
-    # Create repo via Gitea API
-    sleep 5  # allow user creation to propagate
-    kubectl exec -n gitea deploy/gitea -- \
-        curl -sf -X POST http://localhost:3000/api/v1/admin/users/fluxuser/repos \
+    sleep 3
+
+    # Create test repo via API
+    echo "Creating test repo..."
+    kubectl run gitea-repo --rm -i --restart=Never --image=curlimages/curl:latest -n gitea -- \
+        curl -sf -X POST http://gitea-http:3000/api/v1/admin/users/fluxuser/repos \
         -H "Content-Type: application/json" \
         -u fluxuser:fluxpass \
         -d '{"name":"flux-test","private":false}' \
@@ -199,7 +192,8 @@ teardown_file() {
 # --- Gitea + Flux GitOps ---
 
 @test "Gitea is reachable via API" {
-    run kubectl exec -n gitea deploy/gitea -- curl -sf http://localhost:3000/api/v1/version
+    run kubectl run gitea-curl --rm -i --restart=Never --image=curlimages/curl:latest -n gitea -- \
+        curl -sf http://gitea-http:3000/api/v1/version
     assert_success
 }
 
