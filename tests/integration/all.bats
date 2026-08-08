@@ -16,28 +16,79 @@ setup_file() {
 
     # Install Gitea and bootstrap Flux for GitOps tests
     echo "Installing Gitea..."
-    helm repo add gitea https://dl.gitea.com/charts/ 2>/dev/null || true
-    helm repo update 2>/dev/null || true
-    helm install gitea gitea/gitea \
-        --namespace gitea --create-namespace \
-        --set gitea.admin.username=fluxuser \
-        --set gitea.admin.password=fluxpass \
-        --set service.http.type=ClusterIP \
-        --set persistence.enabled=false \
-        --set postgresql-ha.enabled=false \
-        --set valkey-cluster.enabled=false \
-        --wait --timeout 120s 2>/dev/null
+    kubectl create namespace gitea 2>/dev/null || true
 
-    # Wait for Gitea API to be ready
-    echo "Waiting for Gitea API..."
-    local waited=0
-    while ! kubectl exec -n gitea deploy/gitea -- curl -sf http://localhost:3000/api/v1/version >/dev/null 2>&1; do
-        sleep 2
-        waited=$((waited + 2))
-        [ ${waited} -lt 60 ] || break
-    done
+    # Minimal Gitea with sqlite3 — no postgres, no redis/valkey
+    kubectl apply -n gitea -f - <<'GITEA_EOF'
+apiVersion: v1
+kind: Secret
+metadata:
+  name: gitea-admin
+type: Opaque
+stringData:
+  username: fluxuser
+  password: fluxpass
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gitea-http
+spec:
+  ports:
+  - port: 3000
+    targetPort: 3000
+  selector:
+    app: gitea
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitea
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gitea
+  template:
+    metadata:
+      labels:
+        app: gitea
+    spec:
+      containers:
+      - name: gitea
+        image: gitea/gitea:1.25
+        ports:
+        - containerPort: 3000
+        env:
+        - name: GITEA__database__DB_TYPE
+          value: sqlite3
+        - name: GITEA__server__DOMAIN
+          value: gitea-http.gitea.svc.cluster.local
+        - name: GITEA__server__ROOT_URL
+          value: http://gitea-http.gitea.svc.cluster.local:3000
+        - name: GITEA__server__HTTP_PORT
+          value: "3000"
+        - name: GITEA__security__INSTALL_LOCK
+          value: "true"
+        readinessProbe:
+          httpGet:
+            path: /api/v1/version
+            port: 3000
+          initialDelaySeconds: 10
+          periodSeconds: 5
+GITEA_EOF
+
+    kubectl -n gitea wait --for=condition=ready pod -l app=gitea --timeout=120s 2>/dev/null || true
+
+    # Create admin user via Gitea CLI
+    kubectl exec -n gitea deploy/gitea -- \
+        gitea admin user create \
+        --username fluxuser --password fluxpass \
+        --email fluxuser@test.local --admin \
+        2>/dev/null || true
 
     # Create repo via Gitea API
+    sleep 5  # allow user creation to propagate
     kubectl exec -n gitea deploy/gitea -- \
         curl -sf -X POST http://localhost:3000/api/v1/admin/users/fluxuser/repos \
         -H "Content-Type: application/json" \
