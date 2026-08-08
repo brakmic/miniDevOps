@@ -24,8 +24,8 @@ setup_file() {
         --set gitea.admin.password=fluxpass \
         --set service.http.type=ClusterIP \
         --set persistence.enabled=false \
-        --set postgresql.enabled=false \
-        --set memcached.enabled=false \
+        --set postgresql-ha.enabled=false \
+        --set valkey-cluster.enabled=false \
         --wait --timeout 120s 2>/dev/null
 
     # Wait for Gitea API to be ready
